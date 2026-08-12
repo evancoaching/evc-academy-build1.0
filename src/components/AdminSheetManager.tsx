@@ -7,19 +7,15 @@ import {
   Copy, 
   Check, 
   Trash2, 
-  ShieldCheck, 
   Settings, 
   X, 
   Download, 
   Upload, 
   CheckCircle2, 
   AlertCircle, 
-  ExternalLink,
   Lock,
   Unlock,
-  Filter,
-  Layers,
-  Sparkles
+  Filter
 } from 'lucide-react';
 import { Student, Course } from '../types';
 import { ALL_COURSES } from '../data/coursesData';
@@ -836,25 +832,19 @@ function parseLessonsFromSheet(sheet) {
         </div>
       )}
 
-      {/* MODAL 2: Cài Đặt Đồng Bộ Google Sheet Webhook 2 Chiều */}
+      {/* MODAL 2: Cài Đặt Đồng Bộ Google Sheet */}
       {showSettingsModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6 my-8 animate-in fade-in zoom-in-95">
+          <div className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-5 my-8 animate-in fade-in zoom-in-95">
             
-            {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-amber-50 text-[#B45309] rounded-2xl border border-amber-200">
                   <Settings className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="font-extrabold text-slate-900 text-lg sm:text-xl">
-                    Cài Đặt Đồng Bộ Google Sheet (2 Chiều)
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Sử dụng Google Apps Script Webhook không cần tài khoản Google Cloud hay xác thực OAuth phức tạp.
-                  </p>
-                </div>
+                <h3 className="font-extrabold text-slate-900 text-lg">
+                  Đồng Bộ Google Sheet
+                </h3>
               </div>
               <button
                 onClick={() => setShowSettingsModal(false)}
@@ -864,55 +854,42 @@ function parseLessonsFromSheet(sheet) {
               </button>
             </div>
 
-            {/* Webhook Configuration Section */}
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  1. Google Apps Script Webhook URL:
+                  Webhook URL
                 </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="url"
-                    value={webhookUrl}
-                    onChange={(e) => setWebhookUrlState(e.target.value)}
-                    placeholder="https://script.google.com/macros/s/AKfycb.../exec"
-                    className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-300 font-mono text-xs text-slate-800 rounded-xl focus:bg-white focus:border-[#B45309] focus:outline-hidden"
-                  />
-                </div>
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Đường dẫn Web App URL sau khi bạn Deploy (Triển khai) script trên Google Sheet.
-                </p>
+                <input
+                  type="url"
+                  value={webhookUrl}
+                  onChange={(e) => setWebhookUrlState(e.target.value)}
+                  placeholder="https://script.google.com/macros/s/.../exec"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 font-mono text-xs text-slate-800 rounded-xl focus:bg-white focus:border-[#B45309] focus:outline-hidden"
+                />
               </div>
 
-              {/* 2-Way Sync Action Buttons */}
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-                <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  2. Thao Tác Đồng Bộ 2 Chiều:
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <button
-                    onClick={handlePullFromWebhook}
-                    disabled={syncStatus === 'syncing'}
-                    className="w-full py-3 px-4 bg-white hover:bg-amber-50 border border-amber-300 text-[#B45309] font-bold text-xs sm:text-sm rounded-xl shadow-2xs transition-all flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>📥 Tải Về Từ Sheet (Pull)</span>
-                  </button>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={handlePullFromWebhook}
+                  disabled={syncStatus === 'syncing'}
+                  className="w-full py-3 px-4 bg-white hover:bg-amber-50 border border-amber-300 text-[#B45309] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Pull</span>
+                </button>
 
-                  <button
-                    onClick={handlePushToWebhook}
-                    disabled={syncStatus === 'syncing'}
-                    className="w-full py-3 px-4 bg-[#B45309] hover:bg-[#92400E] text-white font-bold text-xs sm:text-sm rounded-xl shadow-2xs transition-all flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Upload className="w-4 h-4" />
-                    <span>📤 Đẩy Lên Sheet (Push)</span>
-                  </button>
-                </div>
+                <button
+                  onClick={handlePushToWebhook}
+                  disabled={syncStatus === 'syncing'}
+                  className="w-full py-3 px-4 bg-[#B45309] hover:bg-[#92400E] text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>Push</span>
+                </button>
               </div>
 
-              {/* Status Message */}
               {statusMsg && (
-                <div className={`p-3.5 rounded-xl border text-xs leading-relaxed flex items-center gap-2.5 ${
+                <div className={`p-3 rounded-xl border text-xs leading-relaxed flex items-center gap-2.5 ${
                   syncStatus === 'error'
                     ? 'bg-red-50 border-red-200 text-red-800'
                     : syncStatus === 'success'
@@ -926,57 +903,42 @@ function parseLessonsFromSheet(sheet) {
                 </div>
               )}
 
-              {/* Script Source Code & Setup Guide */}
-              <div className="space-y-3 pt-2">
-                <div className="flex items-center justify-between">
-                  <div className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                    3. Mã Nguồn Google Apps Script:
-                  </div>
-                  <button
-                    onClick={handleCopyScript}
-                    className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-colors cursor-pointer border border-slate-300"
-                  >
-                    {copiedScript ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        <span className="text-emerald-700">Đã Sao Chép!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5" />
-                        <span>Sao Chép Mã Script</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                <div className="bg-slate-900 rounded-2xl p-4 text-slate-200 font-mono text-[11px] max-h-48 overflow-y-auto border border-slate-800">
-                  <pre>{googleAppsScriptCode}</pre>
-                </div>
-
-                {/* 3 Step Setup Guide */}
-                <div className="p-4 bg-amber-50/70 rounded-2xl border border-amber-200 text-xs text-slate-700 space-y-2">
-                  <div className="font-bold text-amber-900 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-[#B45309]" />
-                    <span>Hướng Dẫn 3 Bước Đơn Giản:</span>
-                  </div>
-                  <ol className="list-decimal pl-4 space-y-1 text-slate-600">
-                    <li>Mở Google Sheet của bạn &gt; Chọn <strong>Tiện ích mở rộng (Extensions)</strong> &gt; <strong>Apps Script</strong>.</li>
-                    <li>Xóa mã cũ, dán đoạn code trên &gt; Bấm <strong>Triển khai (Deploy)</strong> &gt; <strong>Tùy chọn triển khai mới (New deployment)</strong>.</li>
-                    <li>Chọn loại <strong>Ứng dụng web (Web app)</strong>, mục <em>"Ai có quyền truy cập"</em> chọn <strong>Bất kỳ ai (Anyone)</strong> &gt; Bấm Triển khai và sao chép Webhook URL dán vào ô số 1 ở trên.</li>
-                  </ol>
-                </div>
+              <div className="flex items-center justify-between gap-3 pt-1">
+                <span className="text-xs font-semibold text-slate-600">Apps Script</span>
+                <button
+                  onClick={handleCopyScript}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-colors cursor-pointer border border-slate-300"
+                >
+                  {copiedScript ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-700">Đã sao chép</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Sao chép mã script</span>
+                    </>
+                  )}
+                </button>
               </div>
 
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-700 space-y-2">
+                <div className="font-bold text-slate-900">Cách dùng</div>
+                <ol className="list-decimal pl-4 space-y-1.5 text-slate-600">
+                  <li>Sửa dữ liệu trên Google Sheet (tab <strong>students</strong> / <strong>lessons</strong>).</li>
+                  <li>Bấm <strong>Pull</strong> để tải Sheet → App.</li>
+                  <li>Sửa trên App (duyệt học viên, cấp lớp…) rồi bấm <strong>Push</strong> để đẩy App → Sheet.</li>
+                </ol>
+              </div>
             </div>
 
-            {/* Modal Footer */}
-            <div className="flex items-center justify-end pt-4 border-t border-slate-100">
+            <div className="flex items-center justify-end pt-3 border-t border-slate-100">
               <button
                 onClick={() => setShowSettingsModal(false)}
-                className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm rounded-xl transition-all cursor-pointer"
+                className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl transition-all cursor-pointer"
               >
-                Đóng Cài Đặt
+                Đóng
               </button>
             </div>
 
