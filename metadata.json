@@ -1,0 +1,8 @@
+{
+  "name": "Evan Coaching Academy",
+  "description": "Nền tảng học tập trực tuyến Evan Coaching Academy với video bài học Money Skills & Real Estate, theo dõi tiến độ và quản lý học viên qua Google Sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
