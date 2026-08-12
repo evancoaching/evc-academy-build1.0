@@ -80,3 +80,58 @@ export function migrateStudent(raw: Partial<Student> & { status?: string }): Stu
     notes: raw.notes,
   };
 }
+
+/** Merge imported sheet rows into local roster by email (sheet wins on status/role/courses). */
+export function upsertStudentsRoster(
+  prev: Student[],
+  imported: Partial<Student>[]
+): Student[] {
+  const byEmail = new Map<string, Student>(prev.map((s) => [s.email.toLowerCase(), s]));
+
+  imported.forEach((st, idx) => {
+    if (!st.email) return;
+    const cleanEmail = st.email.toLowerCase().trim();
+    const incomingCourses = normalizeCourseIds(st.allowedCourseIds);
+    const existing = byEmail.get(cleanEmail);
+
+    if (existing) {
+      byEmail.set(
+        cleanEmail,
+        migrateStudent({
+          ...existing,
+          fullName: st.fullName || existing.fullName,
+          status: st.status !== undefined && st.status !== null && String(st.status).trim() !== ''
+            ? st.status
+            : existing.status,
+          role: st.role || existing.role,
+          accessLevel: st.accessLevel || existing.accessLevel,
+          allowedCourseIds:
+            st.allowedCourseIds !== undefined ? incomingCourses : existing.allowedCourseIds,
+          dateApproved: st.dateApproved || existing.dateApproved,
+          lastActive: 'Đã đồng bộ từ Google Sheet',
+          notes: st.notes || existing.notes,
+          phone: st.phone || existing.phone,
+        })
+      );
+    } else {
+      byEmail.set(
+        cleanEmail,
+        migrateStudent({
+          id: `sheet-std-${Date.now()}-${idx}`,
+          email: cleanEmail,
+          fullName: st.fullName || 'Học Viên Sheet',
+          status: st.status || 'active',
+          role: st.role,
+          accessLevel: st.accessLevel || 'full',
+          allowedCourseIds: incomingCourses,
+          dateApproved: st.dateApproved || formatJoinDate(),
+          lastActive: 'Đã nhập từ Google Sheet',
+          phone: st.phone,
+          notes: st.notes,
+        })
+      );
+    }
+  });
+
+  return Array.from(byEmail.values());
+}

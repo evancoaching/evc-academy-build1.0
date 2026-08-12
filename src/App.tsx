@@ -12,7 +12,8 @@ import { ALL_COURSES } from './data/coursesData';
 import { INITIAL_STUDENTS } from './data/initialStudents';
 import { Lesson, Student, UserProgress, UserSession, Course } from './types';
 import { mergeLessonsIntoCourses, syncViaAppsScriptWebhook } from './lib/googleSheetsService';
-import { formatJoinDate, migrateStudent } from './lib/studentUtils';
+import { formatJoinDate, migrateStudent, upsertStudentsRoster } from './lib/studentUtils';
+import { getWebhookUrl } from './lib/syncConfig';
 import {
   canAccessClassroom,
   classroomPathFor,
@@ -241,12 +242,16 @@ export default function App() {
       dateApproved: formatJoinDate(),
       lastActive: 'Vừa mới tạo',
     };
-    setStudents((prev) => [newStudent, ...prev]);
+    setStudents((prev) => {
+      const next = [newStudent, ...prev];
+      void pushStudentsToWebhook(next);
+      return next;
+    });
   };
 
   const handleToggleCoursePermission = (studentId: string, courseId: string) => {
-    setStudents((prev) =>
-      prev.map((s) => {
+    setStudents((prev) => {
+      const next = prev.map((s) => {
         if (s.id !== studentId) return s;
         const currentAllowed = normalizeCourseIds(s.allowedCourseIds || []);
         const exists = currentAllowed.includes(courseId);
@@ -254,67 +259,63 @@ export default function App() {
           ? currentAllowed.filter((id) => id !== courseId)
           : [...currentAllowed, courseId];
         return { ...s, allowedCourseIds: updated };
-      })
+      });
+      void pushStudentsToWebhook(next);
+      return next;
+    });
+  };
+
+  const pushStudentsToWebhook = async (roster: Student[]) => {
+    const webhookUrl = getWebhookUrl();
+    if (!webhookUrl) return;
+    const allLessons = courses.flatMap((course) =>
+      course.modules.flatMap((mod) =>
+        mod.lessons.map((l) => ({
+          ...l,
+          courseId: course.id,
+          courseTitle: course.title,
+          moduleTitle: mod.titleVi,
+        }))
+      )
     );
+    await syncViaAppsScriptWebhook(webhookUrl, 'push', {
+      students: roster,
+      lessons: allLessons,
+    });
   };
 
   const handleUpdateStudentStatus = (id: string, status: 'active' | 'pending' | 'blocked') => {
-    setStudents((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, status } : s))
-    );
+    setStudents((prev) => {
+      const next = prev.map((s) => (s.id === id ? { ...s, status } : s));
+      void pushStudentsToWebhook(next);
+      return next;
+    });
   };
 
   const handleDeleteStudent = (id: string) => {
-    setStudents((prev) => prev.filter((s) => s.id !== id));
+    setStudents((prev) => {
+      const next = prev.filter((s) => s.id !== id);
+      void pushStudentsToWebhook(next);
+      return next;
+    });
   };
 
   /** Upsert by email — updates existing rows so Pull syncs pending/status/courses */
   const handleImportStudents = (imported: Partial<Student>[]) => {
-    setStudents((prev) => {
-      const byEmail = new Map<string, Student>(prev.map((s) => [s.email.toLowerCase(), s]));
+    setStudents((prev) => upsertStudentsRoster(prev, imported));
+  };
 
-      imported.forEach((st, idx) => {
-        if (!st.email) return;
-        const cleanEmail = st.email.toLowerCase().trim();
-        const incomingCourses = normalizeCourseIds(st.allowedCourseIds);
-        const existing = byEmail.get(cleanEmail);
+  const refreshStudentsFromSheet = async (): Promise<Student[]> => {
+    const webhookUrl = getWebhookUrl();
+    if (!webhookUrl) return students;
 
-        if (existing) {
-          byEmail.set(
-            cleanEmail,
-            migrateStudent({
-              ...existing,
-              fullName: st.fullName || existing.fullName,
-              status: st.status || existing.status,
-              role: st.role || existing.role,
-              accessLevel: st.accessLevel || existing.accessLevel,
-              allowedCourseIds:
-                st.allowedCourseIds !== undefined ? incomingCourses : existing.allowedCourseIds,
-              dateApproved: st.dateApproved || existing.dateApproved,
-              lastActive: 'Đã đồng bộ từ Google Sheet',
-              notes: st.notes || existing.notes,
-            })
-          );
-        } else {
-          byEmail.set(
-            cleanEmail,
-            migrateStudent({
-              id: `sheet-std-${Date.now()}-${idx}`,
-              email: cleanEmail,
-              fullName: st.fullName || 'Học Viên Sheet',
-              status: st.status || 'active',
-              role: st.role,
-              accessLevel: st.accessLevel || 'full',
-              allowedCourseIds: incomingCourses,
-              dateApproved: st.dateApproved || formatJoinDate(),
-              lastActive: 'Đã nhập từ Google Sheet',
-            })
-          );
-        }
-      });
-
-      return Array.from(byEmail.values());
-    });
+    const res = await syncViaAppsScriptWebhook(webhookUrl, 'pull');
+    if (!res.success || !res.data?.students || res.data.students.length === 0) {
+      return students;
+    }
+    const next = upsertStudentsRoster(students, res.data.students);
+    setStudents(next);
+    return next;
   };
 
   const handleImportLessons = (importedLessons: any[]) => {
@@ -330,25 +331,6 @@ export default function App() {
     });
   };
 
-  const pushStudentsToWebhook = async (roster: Student[]) => {
-    const webhookUrl = localStorage.getItem('evan_coaching_webhook_url') || '';
-    if (!webhookUrl.trim()) return;
-    const allLessons = courses.flatMap((course) =>
-      course.modules.flatMap((mod) =>
-        mod.lessons.map((l) => ({
-          ...l,
-          courseId: course.id,
-          courseTitle: course.title,
-          moduleTitle: mod.titleVi,
-        }))
-      )
-    );
-    await syncViaAppsScriptWebhook(webhookUrl.trim(), 'push', {
-      students: roster,
-      lessons: allLessons,
-    });
-  };
-
   const handleRegisterStudent = (newStudent: Student) => {
     const normalized = migrateStudent({
       ...newStudent,
@@ -356,7 +338,6 @@ export default function App() {
     });
     setStudents((prev) => {
       const next = [normalized, ...prev.filter((s) => s.email.toLowerCase() !== normalized.email)];
-      // Fire-and-forget sheet sync so admin Pull/other devices can see pending
       void pushStudentsToWebhook(next);
       return next;
     });
@@ -395,21 +376,15 @@ export default function App() {
       <LoginPage
         students={students}
         onLoginSuccess={(newSession) => {
-          // Refresh allowedCourseIds from latest roster at login time
-          const rosterMatch = students.find(
-            (s) => s.email.toLowerCase() === newSession.email.toLowerCase()
-          );
           const hydrated: UserSession = {
             ...newSession,
-            allowedCourseIds: normalizeCourseIds(
-              rosterMatch?.allowedCourseIds ?? newSession.allowedCourseIds ?? []
-            ),
-            isAdmin: rosterMatch?.role === 'admin' || newSession.isAdmin,
+            allowedCourseIds: normalizeCourseIds(newSession.allowedCourseIds ?? []),
           };
           setSession(hydrated);
           navigate(hydrated.isAdmin ? '/dashboard' : '/classes');
         }}
         onRegisterStudent={handleRegisterStudent}
+        onRefreshRoster={refreshStudentsFromSheet}
       />
     );
   }

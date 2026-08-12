@@ -8,12 +8,15 @@ interface LoginPageProps {
   students: Student[];
   onLoginSuccess: (session: UserSession) => void;
   onRegisterStudent?: (student: Student) => void;
+  /** Pull latest roster from Google Sheet before auth (cross-device login) */
+  onRefreshRoster?: () => Promise<Student[]>;
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({
   students,
   onLoginSuccess,
   onRegisterStudent,
+  onRefreshRoster,
 }) => {
   const [activeMode, setActiveMode] = useState<'login' | 'register'>('login');
 
@@ -39,7 +42,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   };
 
   // Handle Login Submit (Email or Phone)
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
     const rawInput = identifierInput.trim();
@@ -51,25 +54,32 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
     setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      // Sync roster from Sheet so users approved on admin/other devices can log in
+      let roster = students;
+      if (onRefreshRoster) {
+        try {
+          roster = await onRefreshRoster();
+        } catch {
+          // Fall back to local roster if webhook unreachable
+          roster = students;
+        }
+      }
+
       const isEmail = rawInput.includes('@');
       const cleanEmail = rawInput.toLowerCase();
       const cleanPhone = normalizePhone(rawInput);
 
-      // Match student by email or phone
-      const matchedStudent = students.find((s) => {
+      const matchedStudent = roster.find((s) => {
         if (isEmail) {
           return s.email.toLowerCase() === cleanEmail;
         }
-        // Match by phone if student has phone, or by clean phone digits in notes/email
         if (s.phone && normalizePhone(s.phone) === cleanPhone) {
           return true;
         }
         if (s.notes && normalizePhone(s.notes).includes(cleanPhone) && cleanPhone.length >= 9) {
           return true;
         }
-        // Fallback exact email match if someone entered email without @ (unlikely but safe)
         return s.email.toLowerCase() === cleanEmail;
       });
 
@@ -94,7 +104,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         return;
       }
 
-      // Successful authentication!
       onLoginSuccess({
         email: matchedStudent.email,
         fullName: matchedStudent.fullName,
@@ -105,7 +114,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         accessLevel: matchedStudent.accessLevel,
         allowedCourseIds: normalizeCourseIds(matchedStudent.allowedCourseIds || []),
       });
-    }, 350);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle Self-Registration Submit

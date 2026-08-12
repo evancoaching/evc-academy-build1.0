@@ -24,6 +24,7 @@ import {
 import { Student, Course } from '../types';
 import { ALL_COURSES } from '../data/coursesData';
 import { syncViaAppsScriptWebhook } from '../lib/googleSheetsService';
+import { getWebhookUrl, setWebhookUrl as persistWebhookUrl } from '../lib/syncConfig';
 import { formatJoinDate } from '../lib/studentUtils';
 
 interface AdminSheetManagerProps {
@@ -60,18 +61,14 @@ export const AdminSheetManager: React.FC<AdminSheetManagerProps> = ({
 
   // Settings Modal state
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [webhookUrl, setWebhookUrl] = useState(() => {
-    return localStorage.getItem('evan_coaching_webhook_url') || '';
-  });
+  const [webhookUrl, setWebhookUrlState] = useState(() => getWebhookUrl());
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
   const [statusMsg, setStatusMsg] = useState<string>('');
   const [copiedScript, setCopiedScript] = useState(false);
 
-  // Save Webhook URL
+  // Save Webhook URL (local + shared helper used by Login pull)
   useEffect(() => {
-    if (webhookUrl) {
-      localStorage.setItem('evan_coaching_webhook_url', webhookUrl);
-    }
+    persistWebhookUrl(webhookUrl);
   }, [webhookUrl]);
 
   // Flattened all lessons for push synchronization
@@ -877,7 +874,7 @@ function parseLessonsFromSheet(sheet) {
                   <input
                     type="url"
                     value={webhookUrl}
-                    onChange={(e) => setWebhookUrl(e.target.value)}
+                    onChange={(e) => setWebhookUrlState(e.target.value)}
                     placeholder="https://script.google.com/macros/s/AKfycb.../exec"
                     className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-300 font-mono text-xs text-slate-800 rounded-xl focus:bg-white focus:border-[#B45309] focus:outline-hidden"
                   />
