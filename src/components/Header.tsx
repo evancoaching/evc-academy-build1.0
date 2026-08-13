@@ -74,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="h-9 sm:h-10 w-auto object-contain"
             />
             <span className="font-extrabold text-slate-900 text-sm sm:text-base tracking-tight hidden xs:inline">
-              <span className="text-[#B45309]">Academy</span>
+              <span className="text-[#e34e6b]">Academy</span>
             </span>
           </div>
 
@@ -86,7 +86,7 @@ export const Header: React.FC<HeaderProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Tìm kiếm bài học..."
-              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 hover:bg-slate-100 focus:bg-white text-slate-800 text-xs sm:text-sm rounded-full border border-slate-300 focus:border-[#B45309] focus:outline-hidden transition-all placeholder:text-slate-400"
+              className="w-full pl-9 pr-3 py-1.5 bg-slate-50 hover:bg-slate-100 focus:bg-white text-slate-800 text-xs sm:text-sm rounded-full border border-slate-300 focus:border-[#e34e6b] focus:outline-hidden transition-all placeholder:text-slate-400"
             />
             {searchQuery && (
               <button 
@@ -107,11 +107,11 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => setCoursesDropdownOpen(!coursesDropdownOpen)}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                   currentPath === '/classes' || isOverview
-                    ? 'bg-slate-100 text-[#B45309] border border-slate-200'
+                    ? 'bg-slate-100 text-[#e34e6b] border border-slate-200'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
-                <LayoutGrid className="w-4 h-4 text-[#B45309]" />
+                <LayoutGrid className="w-4 h-4 text-[#e34e6b]" />
                 <span>Khóa học</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${coursesDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -156,7 +156,7 @@ export const Header: React.FC<HeaderProps> = ({
                         }}
                         className={`w-full flex items-center justify-between p-2.5 rounded-xl transition-all text-left cursor-pointer ${
                           isSelected
-                            ? 'bg-amber-50/80 text-[#B45309] font-medium border border-amber-200'
+                            ? 'bg-[#FFE3E9]/80 text-[#e34e6b] font-medium border border-[#FFC9D4]'
                             : 'hover:bg-slate-50 text-slate-700 font-normal'
                         }`}
                       >
@@ -177,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
                         </div>
 
                         {isSelected && (
-                          <Check className="w-4 h-4 text-[#B45309] shrink-0" />
+                          <Check className="w-4 h-4 text-[#e34e6b] shrink-0" />
                         )}
                       </button>
                     );
@@ -197,7 +197,7 @@ export const Header: React.FC<HeaderProps> = ({
               }}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                 isClassroom
-                  ? 'bg-slate-100 text-[#B45309] border border-slate-200'
+                  ? 'bg-slate-100 text-[#e34e6b] border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
               title={
@@ -215,7 +215,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => onNavigate('/resources')}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                 currentPath === '/resources'
-                  ? 'bg-slate-100 text-[#B45309] border border-slate-200'
+                  ? 'bg-slate-100 text-[#e34e6b] border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
@@ -229,7 +229,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => onNavigate('/dashboard')}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                   currentPath === '/dashboard'
-                    ? 'bg-slate-100 text-[#B45309] border border-slate-200'
+                    ? 'bg-slate-100 text-[#e34e6b] border border-slate-200'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
@@ -249,7 +249,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <div className="text-xs font-bold text-slate-900 flex items-center justify-end gap-1">
                       <span>{session.fullName}</span>
                       {session.isAdmin && (
-                        <ShieldCheck className="w-3.5 h-3.5 text-[#B45309]" title="Admin System" />
+                        <ShieldCheck className="w-3.5 h-3.5 text-[#e34e6b]" title="Admin System" />
                       )}
                     </div>
                     <div className="text-[10px] text-slate-500 truncate max-w-[130px]">
@@ -258,7 +258,7 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                 </div>
 
-                <div className="w-9 h-9 rounded-full bg-[#FFFBEB] text-[#B45309] flex items-center justify-center font-extrabold text-xs border border-[#FEF3C7] shrink-0">
+                <div className="w-9 h-9 rounded-full bg-[#FFE3E9] text-[#e34e6b] flex items-center justify-center font-extrabold text-xs border border-[#FFE3E9] shrink-0">
                   {session.fullName.slice(0, 2).toUpperCase()}
                 </div>
 
@@ -305,7 +305,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setMobileMenuOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold ${
-                currentPath === '/classes' ? 'bg-amber-50 text-[#B45309]' : 'text-slate-700'
+                currentPath === '/classes' ? 'bg-[#FFE3E9] text-[#e34e6b]' : 'text-slate-700'
               }`}
             >
               <LayoutGrid className="w-4 h-4" />
@@ -322,7 +322,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setMobileMenuOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold ${
-                isClassroom ? 'bg-amber-50 text-[#B45309]' : 'text-slate-700'
+                isClassroom ? 'bg-[#FFE3E9] text-[#e34e6b]' : 'text-slate-700'
               }`}
             >
               <BookOpen className="w-4 h-4" />
@@ -335,7 +335,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setMobileMenuOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold ${
-                currentPath === '/resources' ? 'bg-amber-50 text-[#B45309]' : 'text-slate-700'
+                currentPath === '/resources' ? 'bg-[#FFE3E9] text-[#e34e6b]' : 'text-slate-700'
               }`}
             >
               <CheckCircle className="w-4 h-4" />
@@ -349,7 +349,7 @@ export const Header: React.FC<HeaderProps> = ({
                   setMobileMenuOpen(false);
                 }}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold ${
-                  currentPath === '/dashboard' ? 'bg-amber-50 text-[#B45309]' : 'text-slate-700'
+                  currentPath === '/dashboard' ? 'bg-[#FFE3E9] text-[#e34e6b]' : 'text-slate-700'
                 }`}
               >
                 <Users className="w-4 h-4" />

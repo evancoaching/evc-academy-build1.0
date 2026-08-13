@@ -2,13 +2,12 @@
 
 @layer base {
   :root {
-    --brand-primary: #B45309;
-    --brand-primary-hover: #92400E;
-    --brand-primary-light: #FFFBEB;
-    --brand-primary-bg: #FFFBEB;
-    --brand-primary-border: #FEF3C7;
-    --brand-primary-dark: #78350F;
-    --brand-[#e34e6b]: #B45309;
+    --brand-primary: #e34e6b;
+    --brand-primary-hover: #cf3c5a;
+    --brand-primary-light: #FFE3E9;
+    --brand-primary-bg: #FFE3E9;
+    --brand-primary-border: #FFE3E9;
+    --brand-primary-dark: #a8324f;
   }
 
   body {
@@ -69,4 +68,3 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #94A3B8;
 }
-

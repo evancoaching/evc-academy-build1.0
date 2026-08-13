@@ -455,7 +455,7 @@ function parseLessonsFromSheet(sheet) {
       {/* Top Header Card - Light Mode, Clean & Minimal */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#B45309] mb-1">
+          <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#e34e6b] mb-1">
             <Users className="w-4 h-4" />
             <span>Quản Trị Hệ Thống</span>
           </div>
@@ -466,7 +466,7 @@ function parseLessonsFromSheet(sheet) {
             Tổng cộng <strong className="text-slate-800 font-semibold">{students.length} học viên</strong> •{' '}
             <strong className="text-emerald-700 font-semibold">{activeCount} đang hoạt động</strong>
             {pendingCount > 0 && (
-              <> • <span className="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">{pendingCount} chờ duyệt</span></>
+              <> • <span className="text-[#e34e6b] font-bold bg-[#FFE3E9] px-2 py-0.5 rounded-full border border-[#FFC9D4]">{pendingCount} chờ duyệt</span></>
             )}
           </p>
         </div>
@@ -475,7 +475,7 @@ function parseLessonsFromSheet(sheet) {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-4 py-2.5 bg-[#B45309] hover:bg-[#92400E] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+            className="px-4 py-2.5 bg-[#e34e6b] hover:bg-[#cf3c5a] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all flex items-center gap-2 cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
             <span>Thêm Học Viên</span>
@@ -498,9 +498,9 @@ function parseLessonsFromSheet(sheet) {
               onClick={handlePullFromWebhook}
               title="Đồng bộ nhanh từ Google Sheet"
               disabled={syncStatus === 'syncing'}
-              className="p-2.5 bg-white hover:bg-amber-50 text-slate-700 hover:text-[#B45309] rounded-xl border border-slate-300 transition-all cursor-pointer"
+              className="p-2.5 bg-white hover:bg-[#FFE3E9] text-slate-700 hover:text-[#e34e6b] rounded-xl border border-slate-300 transition-all cursor-pointer"
             >
-              <RefreshCw className={`w-4 h-4 ${syncStatus === 'syncing' ? 'animate-spin text-[#B45309]' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${syncStatus === 'syncing' ? 'animate-spin text-[#e34e6b]' : ''}`} />
             </button>
           )}
         </div>
@@ -513,10 +513,10 @@ function parseLessonsFromSheet(sheet) {
             ? 'bg-red-50 border-red-200 text-red-800'
             : syncStatus === 'success'
             ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-            : 'bg-amber-50 border-amber-200 text-amber-800'
+            : 'bg-[#FFE3E9] border-[#FFC9D4] text-[#a8324f]'
         }`}>
           <div className="flex items-center gap-2.5 font-medium">
-            {syncStatus === 'syncing' && <RefreshCw className="w-4 h-4 animate-spin text-amber-600 shrink-0" />}
+            {syncStatus === 'syncing' && <RefreshCw className="w-4 h-4 animate-spin text-[#e34e6b] shrink-0" />}
             {syncStatus === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />}
             {syncStatus === 'error' && <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />}
             <span>{statusMsg}</span>
@@ -539,7 +539,7 @@ function parseLessonsFromSheet(sheet) {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Tìm kiếm học viên theo tên, email..."
-            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:border-[#B45309] focus:outline-hidden"
+            className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:border-[#e34e6b] focus:outline-hidden"
           />
         </div>
 
@@ -604,7 +604,7 @@ function parseLessonsFromSheet(sheet) {
                             <div className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
                               <span>{student.fullName}</span>
                               {isAdminRole ? (
-                                <span className="text-[10px] bg-amber-100 text-[#B45309] font-extrabold px-1.5 py-0.2 rounded-md">Admin</span>
+                                <span className="text-[10px] bg-[#FFE3E9] text-[#e34e6b] font-extrabold px-1.5 py-0.2 rounded-md">Admin</span>
                               ) : null}
                             </div>
                             <div className="text-xs font-mono text-slate-500">
@@ -623,8 +623,8 @@ function parseLessonsFromSheet(sheet) {
                           </span>
                         )}
                         {student.status === 'pending' && (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-[#FFE3E9] text-[#e34e6b] border border-[#FFC9D4]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#FFE3E9]0 animate-pulse" />
                             Pending
                           </span>
                         )}
@@ -640,7 +640,7 @@ function parseLessonsFromSheet(sheet) {
                       <td className="p-4">
                         <span className={`text-xs font-semibold px-2 py-1 rounded-lg border ${
                           isAdminRole
-                            ? 'text-[#B45309] bg-amber-50 border-amber-200'
+                            ? 'text-[#e34e6b] bg-[#FFE3E9] border-[#FFC9D4]'
                             : 'text-slate-700 bg-slate-100 border-slate-200'
                         }`}>
                           {isAdminRole ? 'Admin' : 'User'}
@@ -659,7 +659,7 @@ function parseLessonsFromSheet(sheet) {
                                 title={isAllowed ? `Bấm để hủy đăng ký ${c.title}` : `Bấm để đăng ký ${c.title}`}
                                 className={`text-[11px] font-bold px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
                                   isAllowed
-                                    ? 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A] hover:bg-amber-100'
+                                    ? 'bg-[#FFE3E9] text-[#e34e6b] border-[#FFC9D4] hover:bg-[#FFE3E9]'
                                     : 'bg-slate-50 text-slate-400 border-slate-200 hover:border-slate-300'
                                 }`}
                               >
@@ -696,7 +696,7 @@ function parseLessonsFromSheet(sheet) {
                               className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                                 isBlocked
                                   ? 'text-emerald-700 hover:bg-emerald-50'
-                                  : 'text-slate-500 hover:text-amber-700 hover:bg-amber-50'
+                                  : 'text-slate-500 hover:text-[#e34e6b] hover:bg-[#FFE3E9]'
                               }`}
                               title={isBlocked ? 'Kích hoạt lại học viên' : 'Khóa tài khoản'}
                             >
@@ -734,7 +734,7 @@ function parseLessonsFromSheet(sheet) {
             
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-[#FFFBEB] text-[#B45309] rounded-xl">
+                <div className="p-2 bg-[#FFE3E9] text-[#e34e6b] rounded-xl">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
@@ -761,7 +761,7 @@ function parseLessonsFromSheet(sheet) {
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
                   placeholder="hocvien@gmail.com"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-[#B45309] focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-[#e34e6b] focus:outline-hidden"
                 />
               </div>
 
@@ -774,7 +774,7 @@ function parseLessonsFromSheet(sheet) {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="Nguyễn Văn A"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-[#B45309] focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:border-[#e34e6b] focus:outline-hidden"
                 />
               </div>
 
@@ -785,7 +785,7 @@ function parseLessonsFromSheet(sheet) {
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as 'admin' | 'user')}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium focus:bg-white focus:border-[#B45309] focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium focus:bg-white focus:border-[#e34e6b] focus:outline-hidden"
                 >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
@@ -803,7 +803,7 @@ function parseLessonsFromSheet(sheet) {
                         type="checkbox"
                         checked={selectedCourses.includes(c.id)}
                         onChange={() => toggleCourseSelect(c.id)}
-                        className="w-4 h-4 text-[#B45309] rounded-sm cursor-pointer"
+                        className="w-4 h-4 text-[#e34e6b] rounded-sm cursor-pointer"
                       />
                       <span>{c.titleVi || c.title}</span>
                     </label>
@@ -821,7 +821,7 @@ function parseLessonsFromSheet(sheet) {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-[#B45309] hover:bg-[#92400E] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all cursor-pointer"
+                  className="px-5 py-2.5 bg-[#e34e6b] hover:bg-[#cf3c5a] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all cursor-pointer"
                 >
                   Lưu Học Viên
                 </button>
@@ -839,7 +839,7 @@ function parseLessonsFromSheet(sheet) {
             
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-amber-50 text-[#B45309] rounded-2xl border border-amber-200">
+                <div className="p-2.5 bg-[#FFE3E9] text-[#e34e6b] rounded-2xl border border-[#FFC9D4]">
                   <Settings className="w-5 h-5" />
                 </div>
                 <h3 className="font-extrabold text-slate-900 text-lg">
@@ -864,7 +864,7 @@ function parseLessonsFromSheet(sheet) {
                   value={webhookUrl}
                   onChange={(e) => setWebhookUrlState(e.target.value)}
                   placeholder="https://script.google.com/macros/s/.../exec"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 font-mono text-xs text-slate-800 rounded-xl focus:bg-white focus:border-[#B45309] focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 font-mono text-xs text-slate-800 rounded-xl focus:bg-white focus:border-[#e34e6b] focus:outline-hidden"
                 />
               </div>
 
@@ -872,7 +872,7 @@ function parseLessonsFromSheet(sheet) {
                 <button
                   onClick={handlePullFromWebhook}
                   disabled={syncStatus === 'syncing'}
-                  className="w-full py-3 px-4 bg-white hover:bg-amber-50 border border-amber-300 text-[#B45309] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                  className="w-full py-3 px-4 bg-white hover:bg-[#FFE3E9] border border-[#FFC9D4] text-[#e34e6b] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
                 >
                   <Download className="w-4 h-4" />
                   <span>Pull</span>
@@ -881,7 +881,7 @@ function parseLessonsFromSheet(sheet) {
                 <button
                   onClick={handlePushToWebhook}
                   disabled={syncStatus === 'syncing'}
-                  className="w-full py-3 px-4 bg-[#B45309] hover:bg-[#92400E] text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                  className="w-full py-3 px-4 bg-[#e34e6b] hover:bg-[#cf3c5a] text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
                 >
                   <Upload className="w-4 h-4" />
                   <span>Push</span>
@@ -894,9 +894,9 @@ function parseLessonsFromSheet(sheet) {
                     ? 'bg-red-50 border-red-200 text-red-800'
                     : syncStatus === 'success'
                     ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                    : 'bg-amber-50 border-amber-200 text-amber-800'
+                    : 'bg-[#FFE3E9] border-[#FFC9D4] text-[#a8324f]'
                 }`}>
-                  {syncStatus === 'syncing' && <RefreshCw className="w-4 h-4 animate-spin text-amber-600 shrink-0" />}
+                  {syncStatus === 'syncing' && <RefreshCw className="w-4 h-4 animate-spin text-[#e34e6b] shrink-0" />}
                   {syncStatus === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />}
                   {syncStatus === 'error' && <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />}
                   <span>{statusMsg}</span>

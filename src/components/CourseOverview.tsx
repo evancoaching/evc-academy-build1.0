@@ -59,11 +59,11 @@ export const CourseOverview: React.FC<CourseOverviewProps> = ({
       
       {/* Course Hero Banner */}
       <div className="bg-[#0f172a] rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden border border-slate-800">
-        <div className="absolute -right-10 -bottom-10 w-72 h-72 bg-[#B45309]/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -right-10 -bottom-10 w-72 h-72 bg-[#e34e6b]/20 rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 bg-[#FFFBEB]/10 text-[#FEF3C7] border border-[#FEF3C7]/30 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-            <Star className="w-3.5 h-3.5 fill-[#B45309] text-[#B45309]" />
+          <div className="inline-flex items-center gap-2 bg-[#FFE3E9]/10 text-[#FFE3E9] border border-[#FFE3E9]/30 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+            <Star className="w-3.5 h-3.5 fill-[#e34e6b] text-[#e34e6b]" />
             {course.badge}
           </div>
 
@@ -79,7 +79,7 @@ export const CourseOverview: React.FC<CourseOverviewProps> = ({
             {hasClassroomAccess ? (
               <button
                 onClick={onStartCourse}
-                className="px-6 py-3.5 bg-[#B45309] hover:bg-[#92400E] text-white font-extrabold text-base rounded-xl shadow-lg shadow-[#B45309]/25 transition-all flex items-center gap-2 cursor-pointer"
+                className="px-6 py-3.5 bg-[#e34e6b] hover:bg-[#cf3c5a] text-white font-extrabold text-base rounded-xl shadow-lg shadow-[#e34e6b]/25 transition-all flex items-center gap-2 cursor-pointer"
               >
                 <Play className="w-5 h-5 fill-white" />
                 Vào Lớp Học (Classroom)
@@ -119,7 +119,7 @@ export const CourseOverview: React.FC<CourseOverviewProps> = ({
         {isRealEstate ? (
           <>
             <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 text-[#B45309] flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-[#FFE3E9] text-[#e34e6b] flex items-center justify-center font-bold">
                 <Building className="w-5 h-5" />
               </div>
               <h3 className="font-bold text-slate-900 text-base">Module 1: Nguồn Vốn & Vay</h3>
@@ -208,7 +208,7 @@ export const CourseOverview: React.FC<CourseOverviewProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
           <div>
             <div className="flex items-center gap-2">
-              <List className="w-5 h-5 text-[#B45309]" />
+              <List className="w-5 h-5 text-[#e34e6b]" />
               <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
                 Chương Trình Học Chi Tiết ({course.titleVi})
               </h2>
@@ -226,7 +226,7 @@ export const CourseOverview: React.FC<CourseOverviewProps> = ({
 
             <button
               onClick={onStartCourse}
-              className="px-4 py-2 bg-[#B45309] text-white font-bold text-xs rounded-xl shadow-xs hover:bg-[#92400E] cursor-pointer flex items-center gap-1.5"
+              className="px-4 py-2 bg-[#e34e6b] text-white font-bold text-xs rounded-xl shadow-xs hover:bg-[#cf3c5a] cursor-pointer flex items-center gap-1.5"
             >
               <span>Vào lớp học →</span>
             </button>
@@ -247,7 +247,7 @@ export const CourseOverview: React.FC<CourseOverviewProps> = ({
                   className="w-full p-5 bg-slate-50/80 hover:bg-slate-100/80 transition-colors flex items-center justify-between text-left cursor-pointer border-b border-slate-200"
                 >
                   <div className="pr-4">
-                    <span className="text-xs font-extrabold text-[#B45309] uppercase tracking-wide">
+                    <span className="text-xs font-extrabold text-[#e34e6b] uppercase tracking-wide">
                       Module {mod.number} • ({mod.lessons.length} bài học)
                     </span>
                     <h3 className="text-lg font-extrabold text-slate-900 mt-0.5">
@@ -259,7 +259,7 @@ export const CourseOverview: React.FC<CourseOverviewProps> = ({
                   </div>
 
                   <div className="p-2 bg-white rounded-xl border border-slate-200 text-slate-500 shrink-0">
-                    {isExpanded ? <ChevronUp className="w-5 h-5 text-[#B45309]" /> : <ChevronDown className="w-5 h-5" />}
+                    {isExpanded ? <ChevronUp className="w-5 h-5 text-[#e34e6b]" /> : <ChevronDown className="w-5 h-5" />}
                   </div>
                 </button>
 
@@ -270,14 +270,14 @@ export const CourseOverview: React.FC<CourseOverviewProps> = ({
                       <div
                         key={lesson.id}
                         onClick={onStartCourse}
-                        className="p-4 hover:bg-[#FFFBEB]/50 transition-colors flex items-center justify-between cursor-pointer group"
+                        className="p-4 hover:bg-[#FFE3E9]/50 transition-colors flex items-center justify-between cursor-pointer group"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-slate-100 group-hover:bg-[#FEF3C7] text-slate-700 group-hover:text-[#B45309] font-extrabold text-xs flex items-center justify-center shrink-0">
+                          <div className="w-8 h-8 rounded-lg bg-slate-100 group-hover:bg-[#FFE3E9] text-slate-700 group-hover:text-[#e34e6b] font-extrabold text-xs flex items-center justify-center shrink-0">
                             {mod.number}.{lesson.lessonNumber}
                           </div>
                           <div>
-                            <div className="font-bold text-slate-800 text-sm group-hover:text-[#B45309] flex items-center gap-2">
+                            <div className="font-bold text-slate-800 text-sm group-hover:text-[#e34e6b] flex items-center gap-2">
                               <span>{lesson.titleVi}</span>
                             </div>
                             <div className="text-xs text-slate-500 mt-0.5">
@@ -287,8 +287,8 @@ export const CourseOverview: React.FC<CourseOverviewProps> = ({
                         </div>
 
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-xs font-bold text-[#B45309] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                            <Play className="w-3.5 h-3.5 fill-[#B45309]" />
+                          <span className="text-xs font-bold text-[#e34e6b] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                            <Play className="w-3.5 h-3.5 fill-[#e34e6b]" />
                             <span>Học video</span>
                           </span>
                         </div>

@@ -440,8 +440,8 @@ export default function App() {
 
         {route.kind === 'classroom' && !hasClassroomAccess && (
           <div className="max-w-xl mx-auto px-4 py-16">
-            <div className="bg-white border border-amber-200 rounded-3xl p-8 text-center space-y-4 shadow-xs">
-              <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center">
+            <div className="bg-white border border-[#FFC9D4] rounded-3xl p-8 text-center space-y-4 shadow-xs">
+              <div className="mx-auto w-12 h-12 rounded-2xl bg-[#FFE3E9] text-[#e34e6b] flex items-center justify-center">
                 <Lock className="w-6 h-6" />
               </div>
               <h2 className="text-xl font-extrabold text-slate-900">Chưa được cấp quyền lớp học</h2>
@@ -452,7 +452,7 @@ export default function App() {
               </p>
               <button
                 onClick={() => navigate(overviewPathFor(routeCourse))}
-                className="px-4 py-2.5 bg-[#B45309] hover:bg-[#92400E] text-white text-sm font-bold rounded-xl cursor-pointer"
+                className="px-4 py-2.5 bg-[#e34e6b] hover:bg-[#cf3c5a] text-white text-sm font-bold rounded-xl cursor-pointer"
               >
                 Về trang Overview
               </button>

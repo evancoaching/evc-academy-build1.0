@@ -6,7 +6,6 @@ import {
   Circle, 
   Play, 
   BookOpen, 
-  Download, 
   ArrowLeft, 
   ArrowRight, 
   MessageSquare, 
@@ -14,7 +13,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Info,
-  FileSpreadsheet,
   Menu,
   X
 } from 'lucide-react';
@@ -97,7 +95,7 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
               className="w-full flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100/80 transition-colors text-left cursor-pointer"
             >
               <div className="pr-2">
-                <div className="text-[10px] font-extrabold text-[#B45309] uppercase tracking-wider">
+                <div className="text-[10px] font-extrabold text-[#e34e6b] uppercase tracking-wider">
                   Module {mod.number}
                 </div>
                 <div className="text-xs font-bold text-slate-900 line-clamp-1">
@@ -125,7 +123,7 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
                       onClick={() => handleLessonSelectInternal(lesson)}
                       className={`flex items-start gap-2.5 p-2.5 text-left cursor-pointer transition-all ${
                         isCurrent
-                          ? 'bg-amber-50/70 text-[#B45309] font-bold border-l-4 border-[#B45309]'
+                          ? 'bg-[#FFE3E9]/70 text-[#e34e6b] font-bold border-l-4 border-[#e34e6b]'
                           : 'hover:bg-slate-50 text-slate-700'
                       }`}
                     >
@@ -146,13 +144,13 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
                       </button>
 
                       <div className="flex-1 min-w-0">
-                        <p className={`text-xs leading-snug ${isCurrent ? 'font-bold text-[#B45309]' : 'font-medium text-slate-800'}`}>
+                        <p className={`text-xs leading-snug ${isCurrent ? 'font-bold text-[#e34e6b]' : 'font-medium text-slate-800'}`}>
                           {lesson.titleVi}
                         </p>
                       </div>
 
                       {isCurrent && (
-                        <Play className="w-3.5 h-3.5 text-[#B45309] fill-[#B45309] shrink-0 mt-0.5" />
+                        <Play className="w-3.5 h-3.5 text-[#e34e6b] fill-[#e34e6b] shrink-0 mt-0.5" />
                       )}
                     </div>
                   );
@@ -172,7 +170,7 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
       <div className="lg:hidden flex items-center justify-between gap-3 p-3 bg-white border-b border-slate-200 sticky top-0 z-30 shadow-2xs">
         <button
           onClick={() => setMobileMenuOpen(true)}
-          className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-[#B45309] rounded-xl text-xs font-bold transition-all cursor-pointer"
+          className="flex items-center gap-2 px-3 py-1.5 bg-[#FFE3E9] hover:bg-[#FFE3E9] border border-[#FFC9D4] text-[#e34e6b] rounded-xl text-xs font-bold transition-all cursor-pointer"
         >
           <Menu className="w-4 h-4" />
           <span>Danh sách bài học</span>
@@ -183,11 +181,11 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
           <span className="text-slate-500 font-medium text-[11px]">Tiến độ:</span>
           <div className="w-16 sm:w-24 bg-slate-200 h-1.5 rounded-full overflow-hidden">
             <div
-              className="bg-[#B45309] h-1.5 rounded-full transition-all duration-300"
+              className="bg-[#e34e6b] h-1.5 rounded-full transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-          <span className="font-extrabold text-[#B45309] text-[11px]">{progressPercent}%</span>
+          <span className="font-extrabold text-[#e34e6b] text-[11px]">{progressPercent}%</span>
         </div>
       </div>
 
@@ -207,7 +205,7 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
       >
         <div className="p-3.5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
           <div className="flex items-center gap-2">
-            <Menu className="w-4 h-4 text-[#B45309]" />
+            <Menu className="w-4 h-4 text-[#e34e6b]" />
             <span className="text-xs font-bold uppercase text-slate-900">
               Danh Sách Bài Học
             </span>
@@ -221,14 +219,14 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
         </div>
 
         {/* Compact Progress in Drawer */}
-        <div className="p-3 bg-amber-50/60 border-b border-amber-200/60">
+        <div className="p-3 bg-[#FFE3E9]/60 border-b border-[#FFC9D4]/60">
           <div className="flex items-center justify-between text-xs font-semibold mb-1">
             <span className="text-slate-700 text-[11px]">Tiến độ: {completedCount}/{totalLessons} bài</span>
-            <span className="text-[#B45309] font-extrabold text-xs">{progressPercent}%</span>
+            <span className="text-[#e34e6b] font-extrabold text-xs">{progressPercent}%</span>
           </div>
-          <div className="w-full bg-amber-100 h-1.5 rounded-full overflow-hidden">
+          <div className="w-full bg-[#FFE3E9] h-1.5 rounded-full overflow-hidden">
             <div
-              className="bg-[#B45309] h-1.5 rounded-full transition-all duration-500"
+              className="bg-[#e34e6b] h-1.5 rounded-full transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -249,7 +247,7 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
           <div className="flex items-center justify-between gap-2 mb-2">
             {!sidebarCollapsed && (
               <div>
-                <h2 className="text-[10px] font-extrabold uppercase tracking-widest text-[#B45309]">
+                <h2 className="text-[10px] font-extrabold uppercase tracking-widest text-[#e34e6b]">
                   MONEY SKILLS & REAL ESTATE
                 </h2>
                 <p className="text-xs font-bold text-slate-900 line-clamp-1">
@@ -269,14 +267,14 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
 
           {/* Compact Progress Bar for Desktop Sidebar */}
           {!sidebarCollapsed && (
-            <div className="bg-amber-50/60 p-2.5 rounded-xl border border-amber-200/80">
+            <div className="bg-[#FFE3E9]/60 p-2.5 rounded-xl border border-[#FFC9D4]/80">
               <div className="flex items-center justify-between text-xs font-semibold mb-1">
                 <span className="text-slate-700 font-bold text-[11px]">Tiến độ: {completedCount}/{totalLessons} bài</span>
-                <span className="text-[#B45309] font-extrabold text-xs">{progressPercent}%</span>
+                <span className="text-[#e34e6b] font-extrabold text-xs">{progressPercent}%</span>
               </div>
-              <div className="w-full bg-amber-100 h-1.5 rounded-full overflow-hidden">
+              <div className="w-full bg-[#FFE3E9] h-1.5 rounded-full overflow-hidden">
                 <div
-                  className="bg-[#B45309] h-1.5 rounded-full transition-all duration-500"
+                  className="bg-[#e34e6b] h-1.5 rounded-full transition-all duration-500"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
@@ -300,7 +298,7 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
           <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3 mb-3">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="bg-amber-100 text-[#B45309] text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-amber-200">
+                <span className="bg-[#FFE3E9] text-[#e34e6b] text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-[#FFC9D4]">
                   Module {currentLesson.moduleNumber} • Bài {currentLesson.lessonNumber}
                 </span>
                 <span className="text-xs text-slate-400 hidden sm:inline">• Evan Coaching</span>
@@ -349,7 +347,7 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
             {nextLesson ? (
               <button
                 onClick={() => handleLessonSelectInternal(nextLesson)}
-                className="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-[#B45309] hover:bg-[#92400E] rounded-xl shadow-xs transition-colors cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-[#e34e6b] hover:bg-[#cf3c5a] rounded-xl shadow-xs transition-colors cursor-pointer"
               >
                 <span>Bài tiếp theo</span>
                 <ArrowRight className="w-4 h-4" />
@@ -365,37 +363,35 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
               onClick={() => setActiveTab('content')}
               className={`flex items-center gap-2 px-5 py-3 font-bold text-xs sm:text-sm border-b-2 transition-all whitespace-nowrap cursor-pointer ${
                 activeTab === 'content'
-                  ? 'border-[#B45309] text-[#B45309] bg-white'
+                  ? 'border-[#e34e6b] text-[#e34e6b] bg-white'
                   : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
-              <BookOpen className="w-4 h-4 text-[#B45309]" />
-              <span>Nội Dung Bài Học & Tài Liệu</span>
+              <BookOpen className="w-4 h-4 text-[#e34e6b]" />
+              <span>Nội Dung Bài Học</span>
             </button>
 
             <button
               onClick={() => setActiveTab('discussion')}
               className={`flex items-center gap-2 px-5 py-3 font-bold text-xs sm:text-sm border-b-2 transition-all whitespace-nowrap cursor-pointer ${
                 activeTab === 'discussion'
-                  ? 'border-[#B45309] text-[#B45309] bg-white'
+                  ? 'border-[#e34e6b] text-[#e34e6b] bg-white'
                   : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
-              <MessageSquare className="w-4 h-4 text-[#B45309]" />
-              <span>Hỏi Đáp Coach Evan</span>
+              <MessageSquare className="w-4 h-4 text-[#e34e6b]" />
+              <span>Group Chat</span>
             </button>
           </div>
 
           <div className="p-4 sm:p-6">
             
-            {/* Tab 1: Detailed Content + Resources Section Merged */}
             {activeTab === 'content' && (
               <div className="space-y-6 text-slate-800">
                 
-                {/* Summary Bento Box */}
-                <div className="p-4 bg-amber-50/50 border border-amber-200/80 rounded-2xl space-y-1.5">
-                  <h3 className="flex items-center gap-2 font-semibold text-[#B45309] text-xs sm:text-sm">
-                    <Info className="w-4 h-4 shrink-0 text-[#B45309]" />
+                <div className="p-4 bg-[#FFE3E9]/50 border border-[#FFC9D4]/80 rounded-2xl space-y-1.5">
+                  <h3 className="flex items-center gap-2 font-semibold text-[#e34e6b] text-xs sm:text-sm">
+                    <Info className="w-4 h-4 shrink-0 text-[#e34e6b]" />
                     <span>Tóm Tắt Bài Học</span>
                   </h3>
                   <p className="leading-relaxed text-slate-700 text-xs sm:text-sm">
@@ -403,17 +399,16 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
                   </p>
                 </div>
 
-                {/* Key Takeaways Grid */}
                 {currentLesson.keyTakeaways && currentLesson.keyTakeaways.length > 0 && (
                   <div>
                     <h3 className="font-semibold text-slate-900 text-xs sm:text-sm mb-2.5 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#B45309]" />
+                      <Sparkles className="w-4 h-4 text-[#e34e6b]" />
                       <span>Kiến Thức Cốt Lõi Cần Ghi Nhớ (Key Takeaways)</span>
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                       {currentLesson.keyTakeaways.map((point, idx) => (
                         <div key={idx} className="flex items-start gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200 shadow-2xs">
-                          <span className="w-5 h-5 rounded-full bg-amber-100 text-[#B45309] font-semibold text-[11px] flex items-center justify-center shrink-0 mt-0.5 border border-amber-300">
+                          <span className="w-5 h-5 rounded-full bg-[#FFE3E9] text-[#e34e6b] font-semibold text-[11px] flex items-center justify-center shrink-0 mt-0.5 border border-[#FFC9D4]">
                             {idx + 1}
                           </span>
                           <span className="text-slate-700 font-normal text-xs sm:text-sm leading-relaxed">{point}</span>
@@ -422,80 +417,27 @@ export const SkoolClassroom: React.FC<SkoolClassroomProps> = ({
                     </div>
                   </div>
                 )}
-
-                {/* Resources Section */}
-                <div className="pt-4 border-t border-slate-200 space-y-2.5">
-                  <h3 className="font-semibold text-slate-900 text-xs sm:text-sm flex items-center gap-2">
-                    <FileSpreadsheet className="w-4 h-4 text-[#B45309]" />
-                    <span>Resources</span>
-                  </h3>
-
-                  {currentLesson.resources && currentLesson.resources.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {currentLesson.resources.map((res, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between p-4 bg-amber-50/40 border border-amber-200/80 rounded-2xl hover:border-[#B45309] transition-all"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="p-2.5 bg-[#B45309] text-white font-bold text-xs uppercase rounded-xl">
-                              {res.type}
-                            </div>
-                            <div>
-                              <div className="font-bold text-[#B45309] text-xs sm:text-sm">{res.title}</div>
-                              <div className="text-[11px] text-slate-500">Phê duyệt bởi Evan Coaching</div>
-                            </div>
-                          </div>
-                          <a
-                            href={res.url && res.url !== '#' ? res.url : undefined}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => {
-                              if (!res.url || res.url === '#') {
-                                e.preventDefault();
-                                alert(
-                                  `Chưa có link tải cho "${res.title}".\n\nTrên Google Sheet (tab lessons), cột Tài Liệu Đính Kèm hãy ghi:\nTên file.pdf | https://drive.google.com/...`
-                                );
-                              }
-                            }}
-                            className="px-3.5 py-1.5 bg-white text-[#B45309] border border-amber-200 hover:bg-amber-100 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer"
-                          >
-                            <Download className="w-3.5 h-3.5" /> Tải về
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500 font-medium">
-                      Bài học này thực hành trực tiếp theo hướng dẫn trên video, không đính kèm file ngoài.
-                    </div>
-                  )}
-                </div>
-
               </div>
             )}
 
-            {/* Tab 2: Q&A / Discussion */}
             {activeTab === 'discussion' && (
               <div className="space-y-4">
-                <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl">
-                  <h4 className="font-bold text-slate-900 text-sm mb-1">
-                    Gửi câu hỏi thắc mắc trực tiếp cho Coach Evan
+                <div className="p-6 bg-slate-50 border border-slate-200 rounded-2xl text-center space-y-3">
+                  <h4 className="font-bold text-slate-900 text-sm sm:text-base">
+                    Cần giải đáp? Vào Group Chat với Coach Evan
                   </h4>
-                  <p className="text-xs text-slate-600 mb-3">
-                    Bạn cần giải đáp về bài học "{currentLesson.titleVi}"? Hãy để lại câu hỏi bên dưới:
+                  <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
+                    Học viên đặt câu hỏi trong group chat — Coach Evan sẽ trả lời trực tiếp.
                   </p>
-                  <textarea
-                    rows={3}
-                    placeholder="Nhập câu hỏi chi tiết của bạn..."
-                    className="w-full p-3 border border-slate-300 rounded-xl text-sm mb-3 focus:border-[#B45309] focus:outline-hidden"
-                  />
-                  <button
-                    onClick={() => alert('Đã gửi câu hỏi tới Coach Evan! Chúng tôi sẽ phản hồi qua email học viên của bạn.')}
-                    className="px-5 py-2.5 bg-[#0f172a] hover:bg-slate-800 text-white font-bold text-xs rounded-xl cursor-pointer"
+                  <a
+                    href="https://m.me/ch/Aba4LTCCSCBCHipV/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#e34e6b] hover:bg-[#cf3c5a] text-white font-bold text-sm rounded-xl transition-colors"
                   >
-                    Gửi Câu Hỏi
-                  </button>
+                    <MessageSquare className="w-4 h-4" />
+                    Vào Group Chat
+                  </a>
                 </div>
               </div>
             )}

@@ -1,298 +1,228 @@
-import React, { useState } from 'react';
-import { Download, FileSpreadsheet, Lock, CheckCircle2 } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
 import { Course, UserSession } from '../types';
+import { COURSE_SLIDES, CourseSlide, toEmbedUrl } from '../data/courseSlides';
+import { COURSE_TOOLS, CourseToolSection } from '../data/courseTools';
+import { canAccessClassroom } from '../lib/courseAccess';
 
 interface ResourcesListProps {
   courses: Course[];
   session?: UserSession;
 }
 
-interface ResourceItem {
-  id: string;
-  title: string;
-  type: 'EXCEL' | 'PDF' | 'LINK';
-  desc: string;
-  moduleName: string;
-  lessonTitle: string;
-  url: string;
-}
+type ContentTab = 'slide' | 'resources';
 
-interface CourseResourceGroup {
-  courseId: string;
-  courseTitle: string;
-  courseBadge: string;
-  items: ResourceItem[];
-}
+function resolveSlides(courses: Course[]): CourseSlide[] {
+  const byId = new Map(COURSE_SLIDES.map((s) => [s.courseId, { ...s }]));
 
-function normalizeType(type?: string, title = '', url = ''): ResourceItem['type'] {
-  const s = `${type || ''} ${title} ${url}`.toLowerCase();
-  if (s.includes('xls') || s.includes('excel') || s.includes('spreadsheet')) return 'EXCEL';
-  if (s.includes('pdf')) return 'PDF';
-  return 'LINK';
-}
-
-function buildGroupsFromCourses(courses: Course[]): CourseResourceGroup[] {
-  return courses.map((course) => {
-    const items: ResourceItem[] = [];
-
-    course.modules.forEach((mod) => {
-      const moduleName = `Module ${mod.number}: ${mod.titleVi || mod.title}`;
-      mod.lessons.forEach((lesson) => {
-        (lesson.resources || []).forEach((res, idx) => {
-          items.push({
-            id: `${course.id}-${lesson.id}-res-${idx}`,
-            title: res.title,
-            type: normalizeType(res.type, res.title, res.url),
-            desc: lesson.summary || lesson.descriptionVi || `Tài liệu đính kèm bài: ${lesson.titleVi || lesson.title}`,
-            moduleName,
-            lessonTitle: lesson.titleVi || lesson.title,
-            url: res.url || '#',
-          });
-        });
-      });
-    });
-
-    // Deduplicate by title + url within a course
-    const seen = new Set<string>();
-    const unique = items.filter((item) => {
-      const key = `${item.title.toLowerCase()}::${item.url}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-
-    return {
+  courses.forEach((course) => {
+    if (byId.has(course.id)) return;
+    byId.set(course.id, {
       courseId: course.id,
-      courseTitle: course.titleVi || course.title,
-      courseBadge: course.badge || course.category || 'Khóa học',
-      items: unique,
-    };
+      title: `Slide — ${course.titleVi || course.title}`,
+      description: '',
+      embedUrl: '',
+      downloadUrl: '',
+      format: 'pdf',
+    });
   });
+
+  const orderedIds = [
+    ...COURSE_SLIDES.map((s) => s.courseId),
+    ...courses.map((c) => c.id),
+  ];
+  const seen = new Set<string>();
+  const result: CourseSlide[] = [];
+  for (const id of orderedIds) {
+    if (seen.has(id) || !courses.some((c) => c.id === id)) continue;
+    const slide = byId.get(id);
+    if (!slide) continue;
+    seen.add(id);
+    result.push(slide);
+  }
+  return result;
+}
+
+function courseLabel(courseId: string, courses: Course[]): string {
+  if (courseId === 'ms-2026') return 'Money Skills';
+  if (courseId === 're-2026') return 'Real Estate';
+  return courses.find((c) => c.id === courseId)?.titleVi || courseId;
+}
+
+function ToolsTable({ sections }: { sections: CourseToolSection[] }) {
+  if (!sections.length) {
+    return (
+      <p className="py-10 text-center text-sm text-slate-500">
+        Chưa có danh sách công cụ cho lớp này.
+      </p>
+    );
+  }
+
+  let n = 0;
+
+  return (
+    <div className="divide-y divide-slate-100">
+      {sections.map((section) => (
+        <section key={section.category} className="py-4 first:pt-0 last:pb-0">
+          <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wide text-[#e34e6b]">
+            {section.category}
+          </h3>
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="text-[11px] text-slate-400">
+                <th className="pb-1.5 pr-2 font-medium w-8">#</th>
+                <th className="pb-1.5 pr-3 font-medium w-[32%]">Công cụ</th>
+                <th className="pb-1.5 font-medium">Mục đích</th>
+              </tr>
+            </thead>
+            <tbody>
+              {section.items.map((item) => {
+                n += 1;
+                return (
+                  <tr key={`${item.name}-${item.url}`} className="align-top border-t border-slate-50">
+                    <td className="py-2 pr-2 text-xs text-slate-400">{n}</td>
+                    <td className="py-2 pr-3">
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-slate-800 hover:text-[#e34e6b]"
+                      >
+                        {item.name}
+                      </a>
+                    </td>
+                    <td className="py-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                      {item.purpose}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </section>
+      ))}
+    </div>
+  );
 }
 
 export const ResourcesList: React.FC<ResourcesListProps> = ({
   courses,
   session,
 }) => {
-  const [selectedCourseTab, setSelectedCourseTab] = useState<string>('all');
-
-  const resourceGroups = buildGroupsFromCourses(courses);
-
-  const filteredGroups = resourceGroups.filter((group) => {
-    if (selectedCourseTab === 'all') return true;
-    return group.courseId === selectedCourseTab;
-  });
-
-  const handleDownload = (item: ResourceItem) => {
-    if (!item.url || item.url === '#') {
-      alert(
-        `Chưa có link tải cho "${item.title}".\n\nTrên Google Sheet (tab lessons), cột Tài Liệu Đính Kèm hãy ghi:\n${item.title} | https://drive.google.com/...`
-      );
-      return;
+  const slides = useMemo(() => resolveSlides(courses), [courses]);
+  const courseIds = useMemo(() => {
+    const ids = slides.map((s) => s.courseId);
+    for (const id of Object.keys(COURSE_TOOLS)) {
+      if (!ids.includes(id) && courses.some((c) => c.id === id)) ids.push(id);
     }
-    window.open(item.url, '_blank', 'noopener,noreferrer');
-  };
+    return ids.length ? ids : courses.map((c) => c.id);
+  }, [slides, courses]);
+
+  const [courseId, setCourseId] = useState(() => courseIds[0] || '');
+  const [contentTab, setContentTab] = useState<ContentTab>('slide');
+
+  const activeCourseId = courseIds.includes(courseId) ? courseId : courseIds[0] || '';
+  const activeSlide =
+    slides.find((s) => s.courseId === activeCourseId) ||
+    COURSE_SLIDES.find((s) => s.courseId === activeCourseId);
+  const toolSections = COURSE_TOOLS[activeCourseId] || [];
+
+  if (!activeCourseId) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-10 text-center text-sm text-slate-500">
+        Chưa có khóa học nào để hiển thị tài liệu.
+      </div>
+    );
+  }
+
+  const hasAccess = canAccessClassroom(session, activeCourseId);
+  const embedSrc = toEmbedUrl(activeSlide?.embedUrl || activeSlide?.downloadUrl || '');
+  // Only mount iframe when Slide tab is open (faster page, less Canva load)
+  const showSlide = hasAccess && contentTab === 'slide' && !!embedSrc;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 bg-[#FFFBEB] text-[#B45309] border border-[#FEF3C7] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-            <FileSpreadsheet className="w-3.5 h-3.5 text-[#B45309]" />
-            Kho Tài Liệu Theo Lớp Học
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Tài Liệu & File Mẫu Thực Hành (Resources)
-          </h1>
-          <p className="text-sm text-slate-600">
-            Đồng bộ từ bài học / Google Sheet. Chỉ tải được khi Admin đã gắn link download.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 p-1 bg-slate-100 rounded-2xl border border-slate-200 shrink-0">
-          <button
-            onClick={() => setSelectedCourseTab('all')}
-            className={`px-3 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-              selectedCourseTab === 'all'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Tất Cả Lớp Học
-          </button>
-          {resourceGroups.map((group) => (
+    <div className="max-w-5xl mx-auto px-4 py-6 sm:py-8">
+      {/* Class folder tabs */}
+      <div className="flex items-end gap-1 px-1 overflow-x-auto" role="tablist" aria-label="Lớp học">
+        {courseIds.map((id) => {
+          const active = id === activeCourseId;
+          return (
             <button
-              key={group.courseId}
-              onClick={() => setSelectedCourseTab(group.courseId)}
-              className={`px-3 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-                selectedCourseTab === group.courseId
-                  ? 'bg-white text-[#B45309] shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => setCourseId(id)}
+              className={`relative shrink-0 px-5 sm:px-6 py-2.5 text-sm font-bold rounded-t-xl border border-b-0 transition-colors cursor-pointer ${
+                active
+                  ? 'bg-white text-[#e34e6b] border-slate-200 z-10 -mb-px'
+                  : 'bg-[#FFE3E9]/70 text-slate-500 border-transparent hover:text-[#e34e6b] hover:bg-[#FFE3E9]'
               }`}
             >
-              {group.courseId === 'ms-2026'
-                ? 'Money Skills'
-                : group.courseId === 're-2026'
-                ? 'Real Estate'
-                : group.courseTitle}
+              {courseLabel(id, courses)}
+              {active && (
+                <span className="absolute left-3 right-3 -bottom-px h-0.5 bg-[#e34e6b]" />
+              )}
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
-      <div className="space-y-8">
-        {filteredGroups.length === 0 ? (
-          <div className="bg-white rounded-3xl border border-slate-200 p-10 text-center text-slate-500 text-sm">
-            Chưa có khóa học nào để hiển thị tài liệu.
-          </div>
-        ) : (
-          filteredGroups.map((group) => {
-            const hasAccess =
-              session?.isAdmin ||
-              session?.allowedCourseIds?.includes(group.courseId) ||
-              false;
-
+      {/* Folder panel */}
+      <div className="rounded-b-2xl rounded-tr-2xl border border-slate-200 bg-white shadow-xs">
+        {/* Nested Slide / Resources tabs */}
+        <div className="flex items-center gap-1 px-3 sm:px-4 pt-3 pb-0 border-b border-slate-100">
+          {([
+            { id: 'slide' as const, label: 'Slide' },
+            { id: 'resources' as const, label: 'Resources' },
+          ]).map((tab) => {
+            const active = contentTab === tab.id;
             return (
-              <div
-                key={group.courseId}
-                className={`bg-white rounded-3xl border overflow-hidden shadow-xs transition-all ${
-                  hasAccess ? 'border-slate-200' : 'border-amber-200 bg-amber-50/20'
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setContentTab(tab.id)}
+                className={`px-3.5 py-2 text-xs font-bold rounded-t-lg border border-b-0 transition-colors cursor-pointer ${
+                  active
+                    ? 'bg-[#FFE3E9] text-[#e34e6b] border-[#FFC9D4]/80'
+                    : 'bg-transparent text-slate-500 border-transparent hover:text-[#e34e6b]'
                 }`}
               >
-                <div
-                  className={`p-6 border-b flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
-                    hasAccess ? 'bg-slate-50/80 border-slate-200' : 'bg-amber-50/80 border-amber-200'
-                  }`}
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2.5 py-0.5 bg-[#B45309] text-white text-[11px] font-bold rounded-md uppercase">
-                        {group.courseBadge}
-                      </span>
-                      {hasAccess ? (
-                        <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[11px] font-bold rounded-full flex items-center gap-1 border border-emerald-200">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                          Đã Cấp Quyền Tải Tài Liệu
-                        </span>
-                      ) : (
-                        <span className="px-2.5 py-0.5 bg-amber-100 text-amber-900 text-[11px] font-bold rounded-full flex items-center gap-1 border border-amber-300">
-                          <Lock className="w-3.5 h-3.5 text-amber-700" />
-                          Chưa Được Cấp Quyền Khóa Học
-                        </span>
-                      )}
-                    </div>
-                    <h2 className="text-xl font-extrabold text-slate-900">
-                      Lớp: {group.courseTitle}
-                    </h2>
-                  </div>
-
-                  <div className="text-xs text-slate-500 font-semibold">
-                    Tổng số:{' '}
-                    <span className="text-slate-900 font-extrabold">{group.items.length} file</span>
-                  </div>
-                </div>
-
-                {!hasAccess && (
-                  <div className="m-6 p-4 bg-amber-50 border border-amber-300 rounded-2xl flex items-start gap-3">
-                    <Lock className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
-                    <div className="text-xs text-amber-900 space-y-1">
-                      <div className="font-bold">
-                        Tài liệu của khóa học này đang bị khóa đối với tài khoản (
-                        {session?.email || 'Học viên'})
-                      </div>
-                      <p className="text-amber-800">
-                        Khi Admin duyệt cấp quyền khóa học này, các file bên dưới sẽ mở để tải về.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {group.items.length === 0 ? (
-                  <div className="p-8 text-center text-sm text-slate-500">
-                    Chưa có tài liệu đính kèm. Thêm vào cột <strong>Tài Liệu Đính Kèm</strong> trên
-                    tab <strong>lessons</strong> rồi Pull từ Dashboard.
-                  </div>
-                ) : (
-                  <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {group.items.map((item) => {
-                      const canDownload = hasAccess && item.url && item.url !== '#';
-                      return (
-                        <div
-                          key={item.id}
-                          className={`p-4 rounded-2xl border transition-all flex flex-col justify-between space-y-3 ${
-                            hasAccess
-                              ? 'bg-slate-50/60 hover:bg-white border-slate-200 hover:border-[#B45309] hover:shadow-xs'
-                              : 'bg-slate-100/60 border-slate-200 opacity-60'
-                          }`}
-                        >
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider truncate">
-                                {item.moduleName}
-                              </span>
-                              <span
-                                className={`px-2 py-0.5 text-[10px] font-extrabold rounded-md shrink-0 ${
-                                  item.type === 'EXCEL'
-                                    ? 'bg-emerald-600 text-white'
-                                    : item.type === 'PDF'
-                                    ? 'bg-rose-600 text-white'
-                                    : 'bg-slate-600 text-white'
-                                }`}
-                              >
-                                {item.type}
-                              </span>
-                            </div>
-
-                            <div className="font-bold text-slate-900 text-sm leading-snug">
-                              {item.title}
-                            </div>
-
-                            <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
-                              {item.desc}
-                            </p>
-                            <p className="text-[11px] text-slate-400 font-medium">
-                              Bài: {item.lessonTitle}
-                            </p>
-                          </div>
-
-                          <div className="flex items-center justify-between pt-3 border-t border-slate-200/80 text-xs gap-2">
-                            <span className="text-slate-500 text-[11px] font-medium truncate">
-                              {canDownload
-                                ? 'Sẵn sàng tải'
-                                : hasAccess
-                                ? 'Chưa gắn link'
-                                : 'Đang khóa'}
-                            </span>
-
-                            {hasAccess ? (
-                              <button
-                                onClick={() => handleDownload(item)}
-                                className={`px-3.5 py-1.5 font-bold text-xs rounded-xl shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
-                                  canDownload
-                                    ? 'bg-[#B45309] hover:bg-[#92400E] text-white'
-                                    : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
-                                }`}
-                              >
-                                <Download className="w-3.5 h-3.5" /> Tải File
-                              </button>
-                            ) : (
-                              <button
-                                disabled
-                                className="px-3 py-1.5 bg-slate-200 text-slate-500 font-bold text-xs rounded-xl flex items-center gap-1.5 cursor-not-allowed shrink-0"
-                              >
-                                <Lock className="w-3.5 h-3.5" /> Khóa Tải
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+                {tab.label}
+              </button>
             );
-          })
-        )}
+          })}
+        </div>
+
+        <div className="p-3 sm:p-5">
+          {!hasAccess ? (
+            <p className="py-8 text-center text-sm text-slate-600">
+              Chưa được cấp quyền xem tài liệu lớp này.
+            </p>
+          ) : contentTab === 'slide' ? (
+            showSlide ? (
+              <div className="relative w-full aspect-video overflow-hidden rounded-xl bg-white border border-slate-100">
+                <iframe
+                  key={`${activeCourseId}-slide`}
+                  src={embedSrc}
+                  title={activeSlide?.title || 'Slide'}
+                  allow="fullscreen"
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  className="absolute inset-0 w-full h-full border-0"
+                />
+              </div>
+            ) : (
+              <p className="py-8 text-center text-sm text-slate-500">
+                Chưa gắn link slide để nhúng.
+              </p>
+            )
+          ) : (
+            <ToolsTable sections={toolSections} />
+          )}
+        </div>
       </div>
     </div>
   );
