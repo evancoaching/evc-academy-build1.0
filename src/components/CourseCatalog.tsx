@@ -51,18 +51,18 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
           return (
             <div
               key={course.id}
-              className={`bg-white border transition-all duration-200 overflow-hidden flex flex-col justify-between shadow-xs group rounded-none ${
+              className={`bg-white border transition-all duration-200 overflow-hidden flex flex-col justify-between shadow-xs group rounded-3xl ${
                 isActive
                   ? 'border-[#e34e6b] ring-2 ring-[#e34e6b]/20'
                   : 'border-slate-200 hover:border-slate-300 hover:shadow-md'
               }`}
             >
-              {/* Cover: native aspect ratio, no border-radius */}
-              <div className="relative w-full bg-slate-100 rounded-none">
+              {/* Cover: fixed 7:4 across cards */}
+              <div className="relative w-full aspect-[7/4] bg-slate-100 overflow-hidden">
                 <img
                   src={course.thumbnailUrl || ''}
                   alt={course.title}
-                  className="w-full h-auto block rounded-none"
+                  className="absolute inset-0 w-full h-full object-cover object-center"
                   loading="lazy"
                   decoding="async"
                 />

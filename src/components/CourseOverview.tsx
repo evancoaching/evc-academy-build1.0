@@ -86,17 +86,12 @@ export const CourseOverview: React.FC<CourseOverviewProps> = ({
                 <ArrowRight className="w-5 h-5" />
               </button>
             ) : (
-              <div className="space-y-2">
-                <button
-                  disabled
-                  className="px-6 py-3.5 bg-slate-600 text-slate-300 font-extrabold text-base rounded-xl flex items-center gap-2 cursor-not-allowed opacity-80"
-                >
-                  Classroom đang khóa — chưa được cấp quyền
-                </button>
-                <p className="text-xs text-slate-400">
-                  Overview vẫn xem được. Đăng ký / chờ Admin duyệt quyền lớp này để vào xem video.
-                </p>
-              </div>
+              <button
+                disabled
+                className="px-6 py-3.5 bg-slate-600 text-slate-300 font-extrabold text-base rounded-xl flex items-center gap-2 cursor-not-allowed opacity-80"
+              >
+                Classroom đang khóa — chưa được cấp quyền
+              </button>
             )}
 
             {course.externalUrl && (

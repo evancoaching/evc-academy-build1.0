@@ -435,7 +435,9 @@ export const mergeLessonsIntoCourses = (
         category: 'Đào Tạo Đặc Biệt',
         level: 'All Levels',
         description: 'Chương trình được đồng bộ trực tiếp từ Master Google Sheet.',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80',
+        thumbnailUrl:
+          ALL_COURSES.find((c) => c.id === courseId)?.thumbnailUrl ||
+          'https://cdn.prod.website-files.com/65b4f55f4b8e99cd2da141c5/6a7d99cd02015def96a416d8_MSThumb.png',
         totalLessons: 0,
         totalModules: 0,
         durationHours: '8+ Hours',

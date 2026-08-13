@@ -24,6 +24,36 @@ import {
 
 const STUDENTS_KEY = 'evan_coaching_students';
 
+/** Keep catalog covers/meta in sync with code (localStorage can hold stale Unsplash URLs). */
+function withCanonicalCourseMeta(courses: Course[]): Course[] {
+  return courses.map((course) => {
+    const canon = ALL_COURSES.find((c) => c.id === course.id);
+    if (!canon) return course;
+    return {
+      ...course,
+      thumbnailUrl: canon.thumbnailUrl,
+      badge: canon.badge,
+      title: canon.title,
+      titleVi: canon.titleVi,
+      category: canon.category,
+      externalUrl: canon.externalUrl ?? course.externalUrl,
+    };
+  });
+}
+
+function loadCoursesFromStorage(): Course[] {
+  const saved = localStorage.getItem('evan_coaching_courses');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return withCanonicalCourseMeta(parsed);
+      }
+    } catch (e) {}
+  }
+  return ALL_COURSES;
+}
+
 export default function App() {
   const [session, setSession] = useState<UserSession | null>(() => {
     const saved = localStorage.getItem('evan_coaching_session');
@@ -35,26 +65,11 @@ export default function App() {
     return null;
   });
 
-  const [courses, setCourses] = useState<Course[]>(() => {
-    const saved = localStorage.getItem('evan_coaching_courses');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      } catch (e) {}
-    }
-    return ALL_COURSES;
-  });
+  const [courses, setCourses] = useState<Course[]>(() => loadCoursesFromStorage());
 
   const [selectedCourse, setSelectedCourse] = useState<Course>(() => {
-    const saved = localStorage.getItem('evan_coaching_courses');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed[0];
-      } catch (e) {}
-    }
-    return ALL_COURSES[0];
+    const loaded = loadCoursesFromStorage();
+    return loaded[0] || ALL_COURSES[0];
   });
 
   const [students, setStudents] = useState<Student[]>(() => {
@@ -322,7 +337,9 @@ export default function App() {
     if (!importedLessons || importedLessons.length === 0) return;
 
     setCourses((prevCourses) => {
-      const merged = mergeLessonsIntoCourses(prevCourses, importedLessons);
+      const merged = withCanonicalCourseMeta(
+        mergeLessonsIntoCourses(prevCourses, importedLessons)
+      );
       setSelectedCourse((prevSelected) => {
         const found = merged.find((c) => c.id === prevSelected.id);
         return found || merged[0];
