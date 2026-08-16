@@ -11,7 +11,9 @@ import {
   ShieldCheck,
   Menu,
   X,
-  Video
+  Video,
+  Lock,
+  Unlock,
 } from 'lucide-react';
 import { Course, UserSession } from '../types';
 import {
@@ -342,7 +344,7 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <LayoutGrid className="w-4 h-4" />
-              <span>Khóa học (/classes)</span>
+              <span>Khóa học</span>
             </button>
 
             <button
@@ -359,7 +361,12 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Video className="w-4 h-4" />
-              <span>Recordings ({canOpenSelectedRecordings ? 'có quyền' : 'khóa'})</span>
+              <span className="flex-1 text-left">Recordings</span>
+              {canOpenSelectedRecordings ? (
+                <Unlock className="w-4 h-4 text-emerald-600 shrink-0" aria-label="Có quyền" />
+              ) : (
+                <Lock className="w-4 h-4 text-slate-400 shrink-0" aria-label="Khóa" />
+              )}
             </button>
 
             <button
@@ -376,7 +383,12 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <BookOpen className="w-4 h-4" />
-              <span>Lớp học ({canOpenSelectedClassroom ? 'có quyền' : 'khóa'})</span>
+              <span className="flex-1 text-left">Lớp học</span>
+              {canOpenSelectedClassroom ? (
+                <Unlock className="w-4 h-4 text-emerald-600 shrink-0" aria-label="Có quyền" />
+              ) : (
+                <Lock className="w-4 h-4 text-slate-400 shrink-0" aria-label="Khóa" />
+              )}
             </button>
 
             <button
@@ -389,7 +401,7 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <CheckCircle className="w-4 h-4" />
-              <span>Tài liệu (/resources)</span>
+              <span>Tài liệu</span>
             </button>
 
             {session?.isAdmin && (
