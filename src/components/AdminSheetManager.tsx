@@ -17,7 +17,7 @@ import {
   Unlock,
   Filter
 } from 'lucide-react';
-import { Student, Course } from '../types';
+import { Student, Course, Recording } from '../types';
 import { ALL_COURSES } from '../data/coursesData';
 import { syncViaAppsScriptWebhook } from '../lib/googleSheetsService';
 import { getWebhookUrl, setWebhookUrl as persistWebhookUrl } from '../lib/syncConfig';
@@ -26,23 +26,27 @@ import { formatJoinDate } from '../lib/studentUtils';
 interface AdminSheetManagerProps {
   courses?: Course[];
   students: Student[];
+  recordings?: Recording[];
   onAddStudent: (email: string, fullName: string, role: 'admin' | 'user', allowedCourseIds: string[]) => void;
   onUpdateStatus: (id: string, status: 'active' | 'pending' | 'blocked') => void;
   onToggleCoursePermission?: (studentId: string, courseId: string) => void;
   onDeleteStudent: (id: string) => void;
   onImportStudents?: (importedStudents: Partial<Student>[]) => void;
   onImportLessons?: (importedLessons: any[]) => void;
+  onImportRecordings?: (imported: Partial<Recording>[]) => void;
 }
 
 export const AdminSheetManager: React.FC<AdminSheetManagerProps> = ({
   courses = ALL_COURSES,
   students,
+  recordings = [],
   onAddStudent,
   onUpdateStatus,
   onToggleCoursePermission,
   onDeleteStudent,
   onImportStudents,
-  onImportLessons
+  onImportLessons,
+  onImportRecordings,
 }) => {
   // Search & Filter
   const [searchTerm, setSearchTerm] = useState('');
@@ -81,17 +85,15 @@ export const AdminSheetManager: React.FC<AdminSheetManagerProps> = ({
 
   // Google Apps Script source code
   const googleAppsScriptCode = `// Google Apps Script Đồng Bộ 2 Chiều (Không cần OAuth / Không bị lỗi 403)
-// Quản lý cả 2 Tab: "students" (Học Viên) & "lessons" (Bài Học Video)
+// Tabs: "students" | "lessons" | "recordings"
 
 function doGet(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
-  // 1. Quản lý Tab Học Viên (students)
   var studentSheet = findSheetByName(ss, ["students", "Students", "Học Viên", "HocVien", "users"]);
   if (!studentSheet) studentSheet = ss.getSheets()[0];
   var students = parseStudentsFromSheet(studentSheet);
 
-  // 2. Quản lý Tab Bài Học Video (lessons)
   var lessonSheet = findSheetByName(ss, ["lessons", "Lessons", "LESSONS", "baihoc", "Bài Học", "BaiHoc", "Video", "Danh Sách Bài Học"]);
   if (!lessonSheet && ss.getSheets().length > 1) {
     lessonSheet = ss.getSheets()[1];
@@ -101,13 +103,21 @@ function doGet(e) {
     lessons = parseLessonsFromSheet(lessonSheet);
   }
 
+  var recordingSheet = findSheetByName(ss, ["recordings", "Recordings", "RECORDINGS", "Zoom", "zoom"]);
+  var recordings = [];
+  if (recordingSheet) {
+    recordings = parseRecordingsFromSheet(recordingSheet);
+  }
+
   var result = {
     success: true,
     sheetName: ss.getName(),
     studentsCount: students.length,
     lessonsCount: lessons.length,
+    recordingsCount: recordings.length,
     students: students,
-    lessons: lessons
+    lessons: lessons,
+    recordings: recordings
   };
 
   return ContentService.createTextOutput(JSON.stringify(result))
@@ -119,7 +129,6 @@ function doPost(e) {
     var data = JSON.parse(e.postData.contents);
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     
-    // 1. Ghi Tab students
     if (data.students && Array.isArray(data.students)) {
       var sSheet = findSheetByName(ss, ["students", "Students"]) || ss.insertSheet("students");
       sSheet.clear();
@@ -142,7 +151,6 @@ function doPost(e) {
       sSheet.autoResizeColumns(1, sRows[0].length);
     }
     
-    // 2. Ghi Tab lessons
     if (data.lessons && Array.isArray(data.lessons)) {
       var lSheet = findSheetByName(ss, ["lessons", "Lessons"]) || ss.insertSheet("lessons");
       lSheet.clear();
@@ -171,6 +179,28 @@ function doPost(e) {
       lSheet.getRange(1, 1, lRows.length, lRows[0].length).setValues(lRows);
       lSheet.getRange(1, 1, 1, lRows[0].length).setFontWeight("bold").setBackground("#e0e7ff");
       lSheet.autoResizeColumns(1, lRows[0].length);
+    }
+
+    if (data.recordings && Array.isArray(data.recordings)) {
+      var rSheet = findSheetByName(ss, ["recordings", "Recordings"]) || ss.insertSheet("recordings");
+      rSheet.clear();
+      var rRows = [
+        ['Course ID', 'Session #', 'Tên Recording', 'Link Video Embed', 'Tóm Tắt', 'Ngày Record']
+      ];
+      for (var ri = 0; ri < data.recordings.length; ri++) {
+        var rec = data.recordings[ri];
+        rRows.push([
+          rec.courseId || 'ms-2026',
+          rec.sessionNumber || (ri + 1),
+          rec.titleVi || rec.title || '',
+          rec.videoUrl || '',
+          rec.summary || '',
+          rec.recordedAt || ''
+        ]);
+      }
+      rSheet.getRange(1, 1, rRows.length, rRows[0].length).setValues(rRows);
+      rSheet.getRange(1, 1, 1, rRows[0].length).setFontWeight("bold").setBackground("#dcfce7");
+      rSheet.autoResizeColumns(1, rRows[0].length);
     }
     
     return ContentService.createTextOutput(JSON.stringify({ 
@@ -319,32 +349,82 @@ function parseLessonsFromSheet(sheet) {
             resLink = chunk;
             resTitle = 'Tài liệu tải về';
           }
-          // Google Drive view -> download (use RegExp() so '/' in pattern is safe in Apps Script)
           var driveFile = resLink.match(new RegExp('drive\\.google\\.com/file/d/([^/]+)', 'i'));
           if (driveFile && driveFile[1]) {
             resLink = 'https://drive.google.com/uc?export=download&id=' + driveFile[1];
           }
-          var rType = (resTitle + ' ' + resLink).toLowerCase().indexOf('xls') !== -1 || (resTitle + resLink).toLowerCase().indexOf('excel') !== -1 ? 'excel' : 'pdf';
-          parsedResources.push({ title: resTitle, type: rType, url: resLink });
+          var low = (resTitle + ' ' + resLink).toLowerCase();
+          var resType = 'link';
+          if (low.indexOf('pdf') !== -1) resType = 'pdf';
+          else if (low.indexOf('xls') !== -1 || low.indexOf('excel') !== -1 || low.indexOf('sheet') !== -1) resType = 'excel';
+          parsedResources.push({ title: resTitle, type: resType, url: resLink });
         }
       }
-      
       lessons.push({
-        id: 'sheet-les-' + courseId + '-' + modNum + '-' + lesNum + '-' + r,
         courseId: courseId,
         moduleNumber: modNum,
         lessonNumber: lesNum,
-        titleVi: title || ('Bài học ' + lesNum),
-        title: title || ('Lesson ' + lesNum),
+        titleVi: title,
+        title: title,
         videoUrl: video,
         summary: summary,
-        descriptionVi: summary,
         resources: parsedResources
       });
     }
   }
   return lessons;
-}`;
+}
+
+function parseRecordingsFromSheet(sheet) {
+  var data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return [];
+  var header = data[0].map(function(h){ return h.toString().toLowerCase().trim(); });
+  var courseCol = -1, sessionCol = -1, titleCol = -1, videoCol = -1, sumCol = -1, dateCol = -1;
+  for (var c = 0; c < header.length; c++) {
+    var h = header[c];
+    if (h.indexOf('course') !== -1 || h.indexOf('khóa') !== -1) courseCol = c;
+    else if (h.indexOf('session') !== -1 || h.indexOf('buổi') !== -1 || h.indexOf('#') !== -1) sessionCol = c;
+    else if (h.indexOf('tên') !== -1 || h.indexOf('title') !== -1 || h.indexOf('recording') !== -1) titleCol = c;
+    else if (h.indexOf('video') !== -1 || h.indexOf('embed') !== -1 || h.indexOf('link') !== -1 || h.indexOf('url') !== -1) videoCol = c;
+    else if (h.indexOf('tóm tắt') !== -1 || h.indexOf('summary') !== -1 || h.indexOf('mô tả') !== -1) sumCol = c;
+    else if (h.indexOf('ngày') !== -1 || h.indexOf('date') !== -1 || h.indexOf('record') !== -1) dateCol = c;
+  }
+  if (courseCol === -1) courseCol = 0;
+  if (sessionCol === -1) sessionCol = 1;
+  if (titleCol === -1) titleCol = 2;
+  if (videoCol === -1) videoCol = 3;
+  if (sumCol === -1) sumCol = 4;
+  if (dateCol === -1) dateCol = 5;
+  var recordings = [];
+  for (var r = 1; r < data.length; r++) {
+    var row = data[r];
+    var title = row[titleCol] ? row[titleCol].toString().trim() : '';
+    var video = row[videoCol] ? row[videoCol].toString().trim() : '';
+    if (!video) {
+      for (var colIdx = 0; colIdx < row.length; colIdx++) {
+        var cellVal = row[colIdx] ? row[colIdx].toString().trim() : '';
+        if (cellVal.indexOf('http') === 0 || cellVal.indexOf('player.vdocipher.com') !== -1 || cellVal.indexOf('<iframe') !== -1) {
+          video = cellVal;
+          break;
+        }
+      }
+    }
+    if (!title && !video) continue;
+    var courseId = row[courseCol] ? row[courseCol].toString().trim() : 'ms-2026';
+    recordings.push({
+      id: '',
+      courseId: courseId,
+      sessionNumber: parseInt(row[sessionCol], 10) || r,
+      title: title,
+      titleVi: title,
+      videoUrl: video,
+      summary: row[sumCol] ? row[sumCol].toString().trim() : '',
+      recordedAt: row[dateCol] ? row[dateCol].toString().trim() : ''
+    });
+  }
+  return recordings;
+}
+`;
 
   const handleCopyScript = () => {
     navigator.clipboard.writeText(googleAppsScriptCode);
@@ -363,12 +443,13 @@ function parseLessonsFromSheet(sheet) {
     }
 
     setSyncStatus('syncing');
-    setStatusMsg('Đang kết nối và tải dữ liệu từ Google Sheet (học viên & bài học)...');
+    setStatusMsg('Đang kết nối và tải dữ liệu từ Google Sheet (học viên, bài học & recordings)...');
 
     const res = await syncViaAppsScriptWebhook(webhookUrl.trim(), 'pull');
     if (res.success && res.data) {
       let stdCount = 0;
       let lesCount = 0;
+      let recCount = 0;
 
       if (res.data.students && res.data.students.length > 0) {
         if (onImportStudents) {
@@ -384,8 +465,17 @@ function parseLessonsFromSheet(sheet) {
         lesCount = res.data.lessons.length;
       }
 
+      if (res.data.recordings && res.data.recordings.length > 0) {
+        if (onImportRecordings) {
+          onImportRecordings(res.data.recordings);
+        }
+        recCount = res.data.recordings.length;
+      }
+
       setSyncStatus('success');
-      setStatusMsg(`✓ Đã đồng bộ thành công ${stdCount} học viên và ${lesCount} bài học video từ Google Sheet!`);
+      setStatusMsg(
+        `✓ Đã đồng bộ ${stdCount} học viên, ${lesCount} bài học, ${recCount} recordings từ Google Sheet!`
+      );
     } else {
       setSyncStatus('error');
       setStatusMsg(`Lỗi Webhook: ${res.error || 'Không thể kết nối tới Google Apps Script. Vui lòng kiểm tra lại URL'}`);
@@ -393,7 +483,7 @@ function parseLessonsFromSheet(sheet) {
   };
 
   /**
-   * PUSH DATA: Đẩy dữ liệu hiện tại lên Google Sheet Webhook (cả học viên & bài học)
+   * PUSH DATA: Đẩy dữ liệu hiện tại lên Google Sheet Webhook
    */
   const handlePushToWebhook = async () => {
     if (!webhookUrl.trim()) {
@@ -403,16 +493,19 @@ function parseLessonsFromSheet(sheet) {
     }
 
     setSyncStatus('syncing');
-    setStatusMsg('Đang gửi toàn bộ danh sách học viên và bài học lên Google Sheet...');
+    setStatusMsg('Đang gửi học viên, bài học và recordings lên Google Sheet...');
 
     const res = await syncViaAppsScriptWebhook(webhookUrl.trim(), 'push', {
       students,
       lessons: allLessons,
+      recordings,
     });
 
     if (res.success) {
       setSyncStatus('success');
-      setStatusMsg(`✓ Đã cập nhật thành công ${students.length} học viên và ${allLessons.length} bài học lên Google Sheet!`);
+      setStatusMsg(
+        `✓ Đã cập nhật ${students.length} học viên, ${allLessons.length} bài học, ${recordings.length} recordings lên Sheet!`
+      );
     } else {
       setSyncStatus('error');
       setStatusMsg(`Lỗi khi đẩy lên Sheet: ${res.error}`);
@@ -926,7 +1019,7 @@ function parseLessonsFromSheet(sheet) {
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-700 space-y-2">
                 <div className="font-bold text-slate-900">Cách dùng</div>
                 <ol className="list-decimal pl-4 space-y-1.5 text-slate-600">
-                  <li>Sửa dữ liệu trên Google Sheet (tab <strong>students</strong> / <strong>lessons</strong>).</li>
+                  <li>Sửa dữ liệu trên Google Sheet (tab <strong>students</strong> / <strong>lessons</strong> / <strong>recordings</strong>).</li>
                   <li>Bấm <strong>Pull</strong> để tải Sheet → App.</li>
                   <li>Sửa trên App (duyệt học viên, cấp lớp…) rồi bấm <strong>Push</strong> để đẩy App → Sheet.</li>
                 </ol>

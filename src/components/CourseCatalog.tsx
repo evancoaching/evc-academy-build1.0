@@ -1,13 +1,26 @@
 import React from 'react';
 import { BookOpen, Play, CheckCircle2, Sparkles, ArrowRight, ExternalLink, Lock } from 'lucide-react';
 import { Course, UserSession } from '../types';
-import { canAccessClassroom } from '../lib/courseAccess';
+import { ALL_COURSES } from '../data/coursesData';
+import { canAccessClassroom, recordingsPathFor } from '../lib/courseAccess';
 
 interface CourseCatalogProps {
   courses: Course[];
   activeCourseId: string;
   onSelectCourse: (course: Course, targetTab: 'classroom' | 'overview' | string) => void;
   session?: UserSession;
+}
+
+/** Always prefer website copy from ALL_COURSES (avoids stale localStorage description). */
+function catalogCopy(course: Course) {
+  const canon = ALL_COURSES.find((c) => c.id === course.id);
+  return {
+    title: canon?.title || course.title,
+    description: canon?.description || course.description,
+    weeks: canon?.weeks || course.weeks || [],
+    durationHours: canon?.durationHours || course.durationHours,
+    externalUrl: canon?.externalUrl || course.externalUrl,
+  };
 }
 
 export const CourseCatalog: React.FC<CourseCatalogProps> = ({
@@ -47,6 +60,7 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
         {courses.map((course) => {
           const isActive = course.id === activeCourseId;
           const hasAccess = canAccessClassroom(session, course.id);
+          const copy = catalogCopy(course);
 
           return (
             <div
@@ -57,11 +71,10 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                   : 'border-slate-200 hover:border-slate-300 hover:shadow-md'
               }`}
             >
-              {/* Cover: fixed 7:4 across cards */}
               <div className="relative w-full aspect-[7/4] bg-slate-100 overflow-hidden">
                 <img
                   src={course.thumbnailUrl || ''}
-                  alt={course.title}
+                  alt={copy.title}
                   className="absolute inset-0 w-full h-full object-cover object-center"
                   loading="lazy"
                   decoding="async"
@@ -89,10 +102,10 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
               <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-xs text-slate-500 font-medium border-b border-slate-100 pb-2 gap-2">
-                    <span className="font-bold text-slate-700">{course.title}</span>
-                    {course.externalUrl && (
+                    <span className="font-bold text-slate-700">{copy.title}</span>
+                    {copy.externalUrl && (
                       <a
-                        href={course.externalUrl}
+                        href={copy.externalUrl}
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex items-center gap-1 text-[#e34e6b] hover:underline font-semibold shrink-0"
@@ -103,19 +116,27 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                     )}
                   </div>
 
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-3">
-                    {course.description}
-                  </p>
+                  <p className="text-xs text-slate-500 leading-relaxed">{copy.description}</p>
+
+                  {copy.weeks.length > 0 ? (
+                    <ol className="space-y-1.5 text-xs sm:text-sm text-slate-700">
+                      {copy.weeks.map((w) => (
+                        <li key={w.week} className="font-semibold text-slate-800 leading-snug">
+                          {w.title}
+                        </li>
+                      ))}
+                    </ol>
+                  ) : null}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2.5 pt-2 text-xs font-semibold text-slate-600">
                   <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
                     <BookOpen className="w-3.5 h-3.5 text-[#e34e6b]" />
-                    <span>{course.totalModules} Module</span>
+                    <span>4 buổi</span>
                   </div>
                   <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
                     <Play className="w-3.5 h-3.5 text-[#e34e6b]" />
-                    <span>{course.totalLessons} Videos</span>
+                    <span>{copy.durationHours}</span>
                   </div>
                 </div>
               </div>
@@ -130,11 +151,11 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
 
                 {hasAccess ? (
                   <button
-                    onClick={() => onSelectCourse(course, 'classroom')}
+                    onClick={() => onSelectCourse(course, recordingsPathFor(course))}
                     className="px-4 py-2.5 bg-[#e34e6b] hover:bg-[#cf3c5a] text-white font-extrabold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                   >
                     <Play className="w-3.5 h-3.5 fill-white" />
-                    <span>Classroom</span>
+                    <span>Recordings</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 ) : (

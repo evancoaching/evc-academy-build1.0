@@ -49,6 +49,12 @@ export interface UserProgress {
   lessonNotes: Record<string, string>; // lessonId -> note string
 }
 
+export interface CourseWeek {
+  week: number;
+  title: string;
+  points: string[];
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -57,6 +63,10 @@ export interface Course {
   category: string;
   level: string;
   description: string;
+  /** 4 buổi chính — copy từ website gốc */
+  weeks?: CourseWeek[];
+  /** Format học (Zoom / lịch) từ website */
+  formatNote?: string;
   thumbnailUrl?: string;
   externalUrl?: string;
   totalLessons: number;
@@ -71,4 +81,17 @@ export interface UserSession {
   isAdmin: boolean;
   accessLevel: 'full' | 'module1_only';
   allowedCourseIds?: string[];
+}
+
+/** Zoom / live-session recordings (Sheet tab: recordings) */
+export interface Recording {
+  id: string;
+  courseId: string;
+  /** 1-based order within course */
+  sessionNumber: number;
+  title: string;
+  titleVi: string;
+  videoUrl: string;
+  summary?: string;
+  recordedAt?: string;
 }

@@ -1,8 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Course, UserSession } from '../types';
 import { COURSE_SLIDES, CourseSlide, toEmbedUrl } from '../data/courseSlides';
 import { COURSE_TOOLS, CourseToolSection } from '../data/courseTools';
 import { canAccessClassroom } from '../lib/courseAccess';
+
+const RESOURCES_FOCUS_KEY = 'evan_resources_focus';
 
 interface ResourcesListProps {
   courses: Course[];
@@ -119,6 +121,22 @@ export const ResourcesList: React.FC<ResourcesListProps> = ({
 
   const [courseId, setCourseId] = useState(() => courseIds[0] || '');
   const [contentTab, setContentTab] = useState<ContentTab>('slide');
+
+  // Deep-link from Recordings → đúng lớp + tab Slide
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(RESOURCES_FOCUS_KEY);
+      if (!raw) return;
+      sessionStorage.removeItem(RESOURCES_FOCUS_KEY);
+      const parsed = JSON.parse(raw) as { courseId?: string; tab?: ContentTab };
+      if (parsed.courseId && courseIds.includes(parsed.courseId)) {
+        setCourseId(parsed.courseId);
+      }
+      if (parsed.tab === 'slide' || parsed.tab === 'resources') {
+        setContentTab(parsed.tab);
+      }
+    } catch (_) {}
+  }, [courseIds]);
 
   const activeCourseId = courseIds.includes(courseId) ? courseId : courseIds[0] || '';
   const activeSlide =

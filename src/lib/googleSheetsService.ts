@@ -896,8 +896,12 @@ export const pushLessonsToSheet = async (
 export const syncViaAppsScriptWebhook = async (
   webhookUrl: string,
   action: 'pull' | 'push',
-  payload?: { students: Student[]; lessons: any[] }
-): Promise<{ success: boolean; data?: { students: any[]; lessons: any[]; raw?: any }; error?: string }> => {
+  payload?: { students: Student[]; lessons: any[]; recordings?: any[] }
+): Promise<{
+  success: boolean;
+  data?: { students: any[]; lessons: any[]; recordings?: any[]; raw?: any };
+  error?: string;
+}> => {
   try {
     if (action === 'pull') {
       const res = await fetch(webhookUrl);
@@ -907,6 +911,7 @@ export const syncViaAppsScriptWebhook = async (
       // Normalize data response
       let students: any[] = [];
       let lessons: any[] = [];
+      let recordings: any[] = [];
 
       if (Array.isArray(raw)) {
         // If script directly returned array of students or lessons
@@ -921,6 +926,9 @@ export const syncViaAppsScriptWebhook = async (
 
         if (Array.isArray(raw.lessons)) lessons = raw.lessons;
         else if (raw.data && Array.isArray(raw.data.lessons)) lessons = raw.data.lessons;
+
+        if (Array.isArray(raw.recordings)) recordings = raw.recordings;
+        else if (raw.data && Array.isArray(raw.data.recordings)) recordings = raw.data.recordings;
       }
 
       return {
@@ -935,6 +943,7 @@ export const syncViaAppsScriptWebhook = async (
               : [],
           })),
           lessons,
+          recordings,
           raw,
         },
       };
@@ -948,7 +957,7 @@ export const syncViaAppsScriptWebhook = async (
       });
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const raw = await res.json();
-      return { success: true, data: { students: [], lessons: [], raw } };
+      return { success: true, data: { students: [], lessons: [], recordings: [], raw } };
     }
   } catch (err: any) {
     return { success: false, error: err.message || 'Lỗi kết nối Webhook Apps Script.' };
