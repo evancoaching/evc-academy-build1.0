@@ -10,7 +10,7 @@ function extractEmbedSrc(htmlOrUrl: string): string {
   return raw;
 }
 
-/** Real Estate Class July — từ rel-rec.csv */
+/** Real Estate Class July — từ rel-rec.csv (không gồm Testimonial). */
 export const INITIAL_RECORDINGS: Recording[] = [
   {
     id: 're-rec-1',
@@ -19,7 +19,7 @@ export const INITIAL_RECORDINGS: Recording[] = [
     title: 'Real Estate Class July - Buổi 1',
     titleVi: 'Real Estate Class July - Buổi 1',
     videoUrl: extractEmbedSrc(
-      'https://player.vdocipher.com/v2/?otp=20160313versASE32325uBXrOqR7gjQEDF9uRkMBw7cqLN8IVa0kKIqXMQGpdTgO&playbackInfo=eyJ2aWRlb0lkIjoiZDYwZjZmMjFiNDliNGEwMmJjZmMwMzFhMGViYWQzNTYifQ=='
+      'https://player.vdocipher.com/v2/?otp=20160313versASE32325fwbTNuORPpaTUFwI97LC8eiHXv8q1z97o4dyIWS0NTLt&playbackInfo=eyJ2aWRlb0lkIjoiM2U3YTcwNWNhOWZkNDkyOGE0ZWMxOTFiZDYxN2M2NTkifQ=='
     ),
     summary: '',
     recordedAt: '',
@@ -31,7 +31,7 @@ export const INITIAL_RECORDINGS: Recording[] = [
     title: 'Real Estate Class July - Buổi 2',
     titleVi: 'Real Estate Class July - Buổi 2',
     videoUrl: extractEmbedSrc(
-      'https://player.vdocipher.com/v2/?otp=20160313versASE3232dsxIQXZEu16qthhNqhmm83qUZDLttcKKdMlZthEHzeENz&playbackInfo=eyJ2aWRlb0lkIjoiYTkyNzlhYzg0NjVlNDE1ZjkwMzBiNzJlMGEzODhhOGUifQ=='
+      'https://player.vdocipher.com/v2/?otp=20160313versASE3232yqF3uRQUi2PXfNxQxzDB80oFw0h1v5nLeyWogehxfcSQO&playbackInfo=eyJ2aWRlb0lkIjoiYTUyYjc1NWRkNTY0NDQzZmFjMzJjOTBhOWE4OGM0ODMifQ=='
     ),
     summary: '',
     recordedAt: '',
@@ -43,7 +43,7 @@ export const INITIAL_RECORDINGS: Recording[] = [
     title: 'Real Estate Class July - Buổi 3',
     titleVi: 'Real Estate Class July - Buổi 3',
     videoUrl: extractEmbedSrc(
-      'https://player.vdocipher.com/v2/?otp=20160313versASE3232xBuJm9nCUVvMPXIVK57OIKkehAt0LibWJglNWH0WzSoop&playbackInfo=eyJ2aWRlb0lkIjoiM2JiM2FhZjEyY2EyNGNhYWJmMjM0ZmVjZmEyNjI2MjMifQ=='
+      'https://player.vdocipher.com/v2/?otp=20160313versASE323259cuBf2GogVJilsexwbtnH6YVcBDpMzPtiI5RDoBvtx90&playbackInfo=eyJ2aWRlb0lkIjoiOGJlMTJmOTY4NDY0NDY0M2IwNTE2OWQ3NjI4YTQxMmYifQ=='
     ),
     summary: '',
     recordedAt: '',
@@ -55,19 +55,7 @@ export const INITIAL_RECORDINGS: Recording[] = [
     title: 'Real Estate Class July - Buổi 4',
     titleVi: 'Real Estate Class July - Buổi 4',
     videoUrl: extractEmbedSrc(
-      'https://player.vdocipher.com/v2/?otp=20160313versASE3232RAHlOqdEN5I2lDKzk7Yy6Qj11mfMurakCEuF3snPLp6Xz&playbackInfo=eyJ2aWRlb0lkIjoiNGVhNDM5M2I1Zjg2NDQ5ZmFjYTM4NTVlNTIyZWFiZjIifQ=='
-    ),
-    summary: '',
-    recordedAt: '',
-  },
-  {
-    id: 're-rec-5',
-    courseId: 're-2026',
-    sessionNumber: 5,
-    title: 'Real Estate Class July - Testimonial',
-    titleVi: 'Real Estate Class July - Testimonial',
-    videoUrl: extractEmbedSrc(
-      'https://player.vdocipher.com/v2/?otp=20160313versASE3232q12VbFvkUpoB1sCEZfmstVRhzSOhOJ4vpFgRTjMTMKCjr&playbackInfo=eyJ2aWRlb0lkIjoiYjhmZTk4ZDg4OGY0NGMxOWI2YTNhMjc1ZDA4ODkwN2YifQ=='
+      'https://player.vdocipher.com/v2/?otp=20160313versASE3232lf3x8T9IbKsHEM6jth2vCjLG8MRnuenWK09S6CXZLxkBA&playbackInfo=eyJ2aWRlb0lkIjoiZWNiODljMDYzNTgxNGMxNWEyYmVmNWM4ZTI2ODk1ZWYifQ=='
     ),
     summary: '',
     recordedAt: '',
