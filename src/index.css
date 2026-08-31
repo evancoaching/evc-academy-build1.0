@@ -34,7 +34,7 @@
   line-height: 1.8;
 }
 
-/* Smooth video container */
+/* Smooth video container — wider feel on recordings/classroom */
 .video-container {
   position: relative;
   padding-bottom: 56.25%; /* 16:9 ratio */
@@ -42,6 +42,7 @@
   overflow: hidden;
   border-radius: 1rem;
   background-color: #0F172A;
+  width: 100%;
 }
 
 .video-container iframe {
@@ -51,6 +52,12 @@
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+@media (max-width: 640px) {
+  .video-container {
+    border-radius: 0.75rem;
+  }
 }
 
 /* Custom Bento scrollbar */
