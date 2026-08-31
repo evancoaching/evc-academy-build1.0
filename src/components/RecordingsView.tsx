@@ -503,9 +503,6 @@ export const RecordingsView: React.FC<RecordingsViewProps> = ({
                 {chapters.length > 0 ? (
                   <div className="space-y-4 pt-1">
                     <div>
-                      <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 mb-2">
-                        Chapters theo timestamp
-                      </p>
                       <div className="flex flex-wrap gap-2">
                         {chapters.map((ch) => {
                           const isCurrent = ch.id === activeChapter?.id;
