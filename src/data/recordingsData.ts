@@ -19,7 +19,7 @@ export const INITIAL_RECORDINGS: Recording[] = [
     title: 'Real Estate Class July - Buổi 1',
     titleVi: 'Real Estate Class July - Buổi 1',
     videoUrl: extractEmbedSrc(
-      'https://player.vdocipher.com/v2/?otp=20160313versASE32325fwbTNuORPpaTUFwI97LC8eiHXv8q1z97o4dyIWS0NTLt&playbackInfo=eyJ2aWRlb0lkIjoiM2U3YTcwNWNhOWZkNDkyOGE0ZWMxOTFiZDYxN2M2NTkifQ=='
+      'https://player.vdocipher.com/v2/?otp=20160313versASE3232rtMK94WPoeJwl3h7pJ4hHOPcimWGj7mM4Hhmz8Y0dTIZQ&playbackInfo=eyJ2aWRlb0lkIjoiOGJjNzhkNjg5ODUzNGU2YjhmYWI2NDc4NDA1ODkzNzkifQ=='
     ),
     summary: '',
     recordedAt: '',
@@ -31,7 +31,7 @@ export const INITIAL_RECORDINGS: Recording[] = [
     title: 'Real Estate Class July - Buổi 2',
     titleVi: 'Real Estate Class July - Buổi 2',
     videoUrl: extractEmbedSrc(
-      'https://player.vdocipher.com/v2/?otp=20160313versASE3232yqF3uRQUi2PXfNxQxzDB80oFw0h1v5nLeyWogehxfcSQO&playbackInfo=eyJ2aWRlb0lkIjoiYTUyYjc1NWRkNTY0NDQzZmFjMzJjOTBhOWE4OGM0ODMifQ=='
+      'https://player.vdocipher.com/v2/?otp=20160313versASE3232uQxbLhtB8Ba8dDYGVhIBnVSF53jMX6HSg6TwGHnmNV28E&playbackInfo=eyJ2aWRlb0lkIjoiODQwNDBkNGJhNDQ0NGMyYWE4MTRiNTE3MzRmMDc2NzEifQ=='
     ),
     summary: '',
     recordedAt: '',
@@ -43,7 +43,7 @@ export const INITIAL_RECORDINGS: Recording[] = [
     title: 'Real Estate Class July - Buổi 3',
     titleVi: 'Real Estate Class July - Buổi 3',
     videoUrl: extractEmbedSrc(
-      'https://player.vdocipher.com/v2/?otp=20160313versASE323259cuBf2GogVJilsexwbtnH6YVcBDpMzPtiI5RDoBvtx90&playbackInfo=eyJ2aWRlb0lkIjoiOGJlMTJmOTY4NDY0NDY0M2IwNTE2OWQ3NjI4YTQxMmYifQ=='
+      'https://player.vdocipher.com/v2/?otp=20160313versASE3232MS8GwWKzXnv7RHaCwmSC6cs6rv2UO5VpyKp38sfSe06MV&playbackInfo=eyJ2aWRlb0lkIjoiZmZlZGFlMTU1MjE3NDRkYTg1YjU3YTY1YTI1NzNhZDMifQ=='
     ),
     summary: '',
     recordedAt: '',
@@ -55,7 +55,7 @@ export const INITIAL_RECORDINGS: Recording[] = [
     title: 'Real Estate Class July - Buổi 4',
     titleVi: 'Real Estate Class July - Buổi 4',
     videoUrl: extractEmbedSrc(
-      'https://player.vdocipher.com/v2/?otp=20160313versASE3232lf3x8T9IbKsHEM6jth2vCjLG8MRnuenWK09S6CXZLxkBA&playbackInfo=eyJ2aWRlb0lkIjoiZWNiODljMDYzNTgxNGMxNWEyYmVmNWM4ZTI2ODk1ZWYifQ=='
+      'https://player.vdocipher.com/v2/?otp=20160313versASE32328tSQ2tCu6SdGw774IPfrZPZmtaLEG1MfYn3wKTzZlBh9C&playbackInfo=eyJ2aWRlb0lkIjoiZDE0NTAxZGM0NWI5NDU0YzgzNTgxYmFkZmZmZGJjNDYifQ=='
     ),
     summary: '',
     recordedAt: '',

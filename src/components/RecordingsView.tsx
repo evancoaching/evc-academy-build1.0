@@ -504,7 +504,7 @@ export const RecordingsView: React.FC<RecordingsViewProps> = ({
                   <div className="space-y-4 pt-1">
                     <div>
                       <div className="flex flex-wrap gap-2">
-                        {chapters.map((ch) => {
+                        {chapters.map((ch, idx) => {
                           const isCurrent = ch.id === activeChapter?.id;
                           return (
                             <button
@@ -517,12 +517,7 @@ export const RecordingsView: React.FC<RecordingsViewProps> = ({
                                   : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-[#e34e6b] hover:text-[#e34e6b]'
                               }`}
                             >
-                              <span className="tabular-nums opacity-90">
-                                {ch.timestampLabel}
-                              </span>
-                              <span className="max-w-[9rem] sm:max-w-[14rem] truncate">
-                                {ch.code}
-                              </span>
+                              Chapter {idx + 1}
                             </button>
                           );
                         })}
